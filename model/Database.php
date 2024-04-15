@@ -40,8 +40,7 @@ class Database
             }
 
             if($params) {
-                $arr = array(1, 2, 3, 4);
-                foreach ($arr as &$value) {
+                foreach ($params as &$value) {
                     $value = $this->connection->real_escape_string($value);
                 }
 
@@ -51,7 +50,7 @@ class Database
             }
 
             $stmt->execute();
-            
+
             echo $stmt->bind_param($types, ...$params);
 
             return $stmt;
