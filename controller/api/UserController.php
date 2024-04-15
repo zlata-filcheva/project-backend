@@ -1,11 +1,14 @@
 <?php
+
 class UserController extends BaseController
 {
-    public function listAction()
+    public function check()
     {
         $strErrorDesc = '';
         $requestMethod = $_SERVER["REQUEST_METHOD"];
         $arrQueryStringParams = $this->getQueryStringParams();
+        $responseData = "";
+
         if (strtoupper($requestMethod) == 'GET') {
             try {
                 $userModel = new UserModel();
@@ -13,7 +16,7 @@ class UserController extends BaseController
                 if (isset($arrQueryStringParams['limit']) && $arrQueryStringParams['limit']) {
                     $intLimit = $arrQueryStringParams['limit'];
                 }
-                $arrUsers = $userModel->getUsers($intLimit);
+                $arrUsers = $userModel->hasUser($intLimit);
                 $responseData = json_encode($arrUsers);
             } catch (Error $e) {
                 $strErrorDesc = $e->getMessage().'Something went wrong! Please contact support.';
