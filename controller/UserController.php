@@ -11,12 +11,22 @@ class UserController extends BaseController
 
         if (strtoupper($requestMethod) == 'GET') {
             try {
-                $userModel = new UserModel();
-                $intLimit = 10;
-                if (isset($arrQueryStringParams['limit']) && $arrQueryStringParams['limit']) {
-                    $intLimit = $arrQueryStringParams['limit'];
+                if (!isset($arrQueryStringParams['email']) && $arrQueryStringParams['email']) {
+                    throw new Error('No email and password!');
                 }
-                $arrUsers = $userModel->hasUser($intLimit);
+
+                if (!isset($arrQueryStringParams['password']) && $arrQueryStringParams['password']) {
+                    throw new Error('No email and password!');
+                }
+
+                $userModel = new UserModel();
+
+                [
+                    'email' => $email,
+                    'password' => $password
+                ] = $arrQueryStringParams;
+
+                $arrUsers = $userModel->hasUser($email, $password);
                 $responseData = json_encode($arrUsers);
             } catch (Error $e) {
                 $strErrorDesc = $e->getMessage().'Something went wrong! Please contact support.';

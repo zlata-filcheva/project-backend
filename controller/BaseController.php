@@ -9,10 +9,13 @@ class BaseController
         $this->sendOutput('', array('HTTP/1.1 404 Not Found'));
     }
 
-    protected function getQueryStringParams(): null
+    protected function getQueryStringParams()
     {
-        return parse_str($_SERVER['QUERY_STRING'], $query);
+        parse_str($_SERVER['QUERY_STRING'], $query);
+
+        return $query;
     }
+
     #[NoReturn] protected function sendOutput($data, $httpHeaders=array())
     {
         header_remove('Set-Cookie');
