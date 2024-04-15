@@ -40,7 +40,15 @@ class UserController extends BaseController
         if (!$strErrorDesc) {
             $this->sendOutput(
                 $responseData,
-                array('Content-Type: application/json', 'HTTP/1.1 200 OK')
+                array(
+                    'Content-Type: application/json',
+                    'HTTP/1.1 200 OK',
+                    "Access-Control-Allow-Origin: https://localhost:5173",
+                    "Access-Control-Allow-Methods: GET",
+                    "Access-Control-Allow-Headers: Content-Type",
+                    'Access-Control-Allow-Credentials: true',
+                    'Access-Control-Max-Age: 86400'
+                )
             );
         } else {
             $this->sendOutput(json_encode(array('error' => $strErrorDesc)),
