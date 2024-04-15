@@ -64,12 +64,9 @@ CREATE TABLE `tags` (
 
 -- --------------------------------------------------------
 
---
--- Структура таблицы `users`
---
 
 CREATE TABLE `users` (
-                         `id` int(8) NOT NULL AUTO_INCREMENT,
+                         `id` int(8) NOT NULL PRIMARY KEY AUTO_INCREMENT,
                          `password` varchar(255) NOT NULL,
                          `email` varchar(255) NOT NULL,
                          `creationDate` datetime NOT NULL DEFAULT current_timestamp(),
@@ -104,7 +101,6 @@ ALTER TABLE `tags`
 -- Индексы таблицы `users`
 --
 ALTER TABLE `users`
-    ADD PRIMARY KEY (`id`),
     ADD UNIQUE KEY `email` (`email`),
     ADD KEY `id` (`id`);
 

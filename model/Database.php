@@ -3,6 +3,7 @@
 class Database
 {
     protected $connection = null;
+
     public function __construct()
     {
         try {
@@ -16,10 +17,10 @@ class Database
         }
     }
 
-    public function select($query = "" , $params = [])
+    protected function select($query = "" , $types, $params = [])
     {
         try {
-            $stmt = $this->executeStatement( $query , $params );
+            $stmt = $this->executeStatement( $query , $types, $params );
             $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             $stmt->close();
             return $result;
@@ -29,17 +30,29 @@ class Database
         return false;
     }
 
-    private function executeStatement($query = "" , $params = [])
+    private function executeStatement($query = "" , $types, $params = [])
     {
         try {
-            $stmt = $this->connection->prepare( $query );
+            $stmt = $this->connection->prepare($query);
+
             if($stmt === false) {
                 throw New Exception("Unable to do prepared statement: " . $query);
             }
-            if( $params ) {
-                $stmt->bind_param($params[0], $params[1]);
+
+            if($params) {
+                foreach ($params as &$value) {
+                    $value = $this->connection->real_escape_string($value);
+                }
+
+                unset($value);
+
+                $stmt->bind_param($types, ...$params);
             }
+
             $stmt->execute();
+
+            echo $stmt->bind_param($types, ...$params);
+
             return $stmt;
         } catch(Exception $e) {
             throw New Exception( $e->getMessage() );

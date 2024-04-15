@@ -9,8 +9,8 @@ if ((isset($uri[3]) && $uri[3] != 'user') || !isset($uri[4])) {
     exit();
 }
 
-require PROJECT_ROOT_PATH . "/controller/api/UserController.php";
+require PROJECT_ROOT_PATH . "/controller/UserController.php";
 
 $objFeedController = new UserController();
-$strMethodName = $uri[4] . 'Action';
+$strMethodName = $uri[4];
 $objFeedController->{$strMethodName}();
