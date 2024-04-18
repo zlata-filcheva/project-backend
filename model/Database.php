@@ -51,8 +51,6 @@ class Database
 
             $stmt->execute();
 
-            echo $stmt->bind_param($types, ...$params);
-
             return $stmt;
         } catch(Exception $e) {
             throw New Exception( $e->getMessage() );

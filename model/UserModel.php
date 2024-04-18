@@ -2,7 +2,10 @@
 require_once PROJECT_ROOT_PATH . "/model/Database.php";
 
 const HAS_USER_SQL = <<<'SQL'
-SELECT 1
+SELECT 
+    id, 
+    email,
+    role
 FROM users 
 WHERE email=? AND password=?
 SQL;

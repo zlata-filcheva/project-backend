@@ -27,7 +27,7 @@ class UserController extends BaseController
                 ] = $arrQueryStringParams;
 
                 $arrUsers = $userModel->hasUser($email, $password);
-                $responseData = json_encode($arrUsers);
+                $responseData = json_encode($arrUsers[0]);
             } catch (Error $e) {
                 $strErrorDesc = $e->getMessage().'Something went wrong! Please contact support.';
                 $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';
