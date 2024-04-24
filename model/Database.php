@@ -17,10 +17,10 @@ class Database
         }
     }
 
-    protected function select($query = "" , $types, $params = [])
+    protected function select($query = "", $types = '', $params = [])
     {
         try {
-            $stmt = $this->executeStatement( $query , $types, $params );
+            $stmt = $this->executeStatement($query, $types, $params);
             $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             $stmt->close();
             return $result;
@@ -30,7 +30,20 @@ class Database
         return false;
     }
 
-    private function executeStatement($query = "" , $types, $params = [])
+    protected function insert($query = "", $types, $params = [])
+    {
+        try {
+            $stmt = $this->executeStatement($query, $types, $params);
+
+            $stmt->close();
+        } catch(Exception $e) {
+            throw New Exception( $e->getMessage() );
+        }
+
+        return false;
+    }
+
+    private function executeStatement($query = "" , $types = '', $params = [])
     {
         try {
             $stmt = $this->connection->prepare($query);
@@ -39,7 +52,7 @@ class Database
                 throw New Exception("Unable to do prepared statement: " . $query);
             }
 
-            if($params) {
+            if(!isset($params)) {
                 foreach ($params as &$value) {
                     $value = $this->connection->real_escape_string($value);
                 }

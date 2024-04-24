@@ -1,33 +1,19 @@
 <?php
 
-class UserController extends BaseController
+class TagsController extends BaseController
 {
-    public function check()
+    public function get()
     {
         $strErrorDesc = '';
         $requestMethod = $_SERVER["REQUEST_METHOD"];
-        $arrQueryStringParams = $this->getQueryStringParams();
         $responseData = "";
 
         if (strtoupper($requestMethod) == 'GET') {
             try {
-                if (!isset($arrQueryStringParams['email']) && $arrQueryStringParams['email']) {
-                    throw new Error('No email and password!');
-                }
+                $model = new TagsModel();
 
-                if (!isset($arrQueryStringParams['password']) && $arrQueryStringParams['password']) {
-                    throw new Error('No email and password!');
-                }
-
-                $userModel = new UserModel();
-
-                [
-                    'email' => $email,
-                    'password' => $password
-                ] = $arrQueryStringParams;
-
-                $arrUsers = $userModel->hasUser($email, $password);
-                $responseData = json_encode($arrUsers[0]);
+                //$response = $model->getTags();
+                //$responseData = json_encode($response);
             } catch (Error $e) {
                 $strErrorDesc = $e->getMessage().'Something went wrong! Please contact support.';
                 $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';
