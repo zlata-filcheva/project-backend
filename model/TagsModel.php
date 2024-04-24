@@ -6,7 +6,7 @@ SELECT
     id, 
     name
 FROM tags 
-ORDER BY ASC 
+ORDER BY name ASC 
 SQL;
 
 class TagsModel extends Database

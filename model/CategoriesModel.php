@@ -6,7 +6,7 @@ SELECT
     id, 
     name
 FROM categories 
-ORDER BY ASC 
+ORDER BY name ASC 
 SQL;
 
 class CategoriesModel extends Database
