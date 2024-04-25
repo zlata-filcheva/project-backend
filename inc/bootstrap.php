@@ -5,12 +5,6 @@ require PROJECT_ROOT_PATH . "/inc/config.php";
 
 require PROJECT_ROOT_PATH . "/controller/BaseController.php";
 
-/*
-require PROJECT_ROOT_PATH . "/controller/UserController.php";
-require PROJECT_ROOT_PATH . "/controller/CategoriesController.php";
-require PROJECT_ROOT_PATH . "/controller/TagsController.php";
-*/
-
-//require PROJECT_ROOT_PATH . "/model/UserModel.php";
-//require PROJECT_ROOT_PATH . "/model/CategoriesModel.php";
+require PROJECT_ROOT_PATH . "/model/UserModel.php";
+require PROJECT_ROOT_PATH . "/model/CategoriesModel.php";
 require PROJECT_ROOT_PATH . "/model/TagsModel.php";

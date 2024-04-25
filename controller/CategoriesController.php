@@ -2,7 +2,7 @@
 
 class CategoriesController extends BaseController
 {
-    public function getCategories()
+    public function get()
     {
         $strErrorDesc = '';
         $requestMethod = $_SERVER["REQUEST_METHOD"];

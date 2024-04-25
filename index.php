@@ -13,26 +13,24 @@ if (!isset($uri[3]) || !in_array($uri[3], ALLOWED_URI) || !isset($uri[4])) {
     exit();
 }
 
-
-//require PROJECT_ROOT_PATH . "/controller/UserController.php";
-//require PROJECT_ROOT_PATH . "/controller/CategoriesController.php";
+require PROJECT_ROOT_PATH . "/controller/UserController.php";
+require PROJECT_ROOT_PATH . "/controller/CategoriesController.php";
 require PROJECT_ROOT_PATH . "/controller/TagsController.php";
 
-//$userController = new UserController();
-//$categoriesFeedController = new CategoriesController();
+$userController = new UserController();
+$categoriesFeedController = new CategoriesController();
 $tagsFeedController = new TagsController();
 
-/*
-$objFeedController = new UserController();
-$strMethodName = $uri[4];
-$objFeedController->{$strMethodName}();
-*/
-
-$controller = $uri[3] . 'Controller';
 $strMethodName = $uri[4];
 
+if ($uri[3] === "user") {
+    $tagsFeedController->{$strMethodName}();
+}
 
-//$controller->{$strMethodName}();
+if ($uri[3] === "categories") {
+    $tagsFeedController->{$strMethodName}();
+}
 
-
-$tagsFeedController->{$strMethodName}();
+if ($uri[3] === "tags") {
+    $tagsFeedController->{$strMethodName}();
+}
