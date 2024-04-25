@@ -5,7 +5,8 @@ use JetBrains\PhpStorm\NoReturn;
 class BaseController
 {
     const FRONT_END_URI = "https://127.0.0.1:5173";
-    const SUCCESS_HEADERS = [
+
+    const HEADERS_200 = [
         "Content-Type: application/json",
         "HTTP/1.1 200 OK",
         "Access-Control-Allow-Origin: " . BaseController::FRONT_END_URI,
@@ -15,6 +16,10 @@ class BaseController
         "Access-Control-Max-Age: 86400"
     ];
 
+    const RESPONSE_DATA_DECODED_422 = ['error' => 'Method not supported'];
+    const HEADERS_422 = ['Content-Type: application/json', 'HTTP/1.1 422 Unprocessable Entity'];
+
+    const HEADERS_500 = ['Content-Type: application/json', 'HTTP/1.1 500 Internal Server Error'];
 
     #[NoReturn] public function __call($name, $arguments)
     {
