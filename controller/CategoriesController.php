@@ -22,23 +22,14 @@ class CategoriesController extends BaseController
             $strErrorDesc = 'Method not supported';
             $strErrorHeader = 'HTTP/1.1 422 Unprocessable Entity';
         }
+
         // send output
         if (!$strErrorDesc) {
-            $this->sendOutput(
-                $responseData,
-                array(
-                    'Content-Type: application/json',
-                    'HTTP/1.1 200 OK',
-                    "Access-Control-Allow-Origin: https://127.0.0.1:5173",
-                    "Access-Control-Allow-Methods: GET",
-                    "Access-Control-Allow-Headers: Content-Type",
-                    'Access-Control-Allow-Credentials: true',
-                    'Access-Control-Max-Age: 86400'
-                )
-            );
+            $this->sendOutput($responseData, $this->SUCCESS_HEADERS);
         } else {
-            $this->sendOutput(json_encode(array('error' => $strErrorDesc)),
-                array('Content-Type: application/json', $strErrorHeader)
+            $this->sendOutput(
+                json_encode(['error' => $strErrorDesc]),
+                ['Content-Type: application/json', $strErrorHeader]
             );
         }
     }
