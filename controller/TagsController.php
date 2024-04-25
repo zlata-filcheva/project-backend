@@ -12,8 +12,8 @@ class TagsController extends BaseController
             try {
                 $model = new TagsModel();
 
-                //$response = $model->getTags();
-                //$responseData = json_encode($response);
+                $response = $model->getTags();
+                $responseData = json_encode($response);
             } catch (Error $e) {
                 $strErrorDesc = $e->getMessage().'Something went wrong! Please contact support.';
                 $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';

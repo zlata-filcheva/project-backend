@@ -11,7 +11,7 @@ INSERT INTO posts (
 ) VALUES (?, ?, ?, ?, ?)
 SQL;
 
-class UserModel extends Database
+class PostModel extends Database
 {
     public function addPost($content, $topic, $categoryId, $userId, $tags)
     {
