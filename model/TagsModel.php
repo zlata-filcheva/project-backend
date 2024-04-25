@@ -9,10 +9,23 @@ FROM tags
 ORDER BY name ASC 
 SQL;
 
+const CREATE_TAGS_SQL = <<<'SQL'
+INSERT INTO tags (
+    name
+) VALUES (?)
+SQL;
+
 class TagsModel extends Database
 {
     public function getTags()
     {
         return $this->select(GET_TAGS_SQL);
+    }
+
+    public function createTags($tags = [])
+    {
+        foreach ($tags as $tag) {
+            return $this->insert(GET_TAGS_SQL, 's', [$tag]);
+        }
     }
 }
