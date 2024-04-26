@@ -4,12 +4,14 @@ class TagsController extends BaseController
 {
     public function get()
     {
+        $responseData = "";
+        $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
         if (strtoupper($requestMethod) !== 'GET') {
             $this->sendOutput(
-                json_encode($this->RESPONSE_DATA_DECODED_422),
-                $this->HEADERS_422
+                json_encode(self::RESPONSE_DATA_DECODED_422),
+                self::HEADERS_422
             );
 
             return;
@@ -21,13 +23,13 @@ class TagsController extends BaseController
             $response = $model->getTags();
 
             $responseData = json_encode($response);
-            $httpResponseHeader = $this->HEADERS_200;
+            $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
 
             $responseData = json_encode(['error' => $strErrorDesc]);
-            $httpResponseHeader = $this->HEADERS_500;
+            $httpResponseHeader = self::HEADERS_500;
 
         }
         finally {
@@ -37,12 +39,14 @@ class TagsController extends BaseController
 
     public function add()
     {
+        $responseData = "";
+        $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
         if (strtoupper($requestMethod) !== 'POST' && !isset($_POST["tags"])) {
             $this->sendOutput(
-                json_encode($this->RESPONSE_DATA_DECODED_422),
-                $this->HEADERS_422
+                json_encode(self::RESPONSE_DATA_DECODED_422),
+                self::HEADERS_422
             );
 
             return;
@@ -56,13 +60,13 @@ class TagsController extends BaseController
             $response = $model->createTags($tags);
 
             $responseData = json_encode($response);
-            $httpResponseHeader = $this->HEADERS_200;
+            $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
 
             $responseData = json_encode(['error' => $strErrorDesc]);
-            $httpResponseHeader = $this->HEADERS_500;
+            $httpResponseHeader = self::HEADERS_500;
 
         }
         finally {

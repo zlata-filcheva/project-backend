@@ -39,7 +39,7 @@ class UserController extends BaseController
 
         // send output
         if (!$strErrorDesc) {
-            $this->sendOutput($responseData, $this->SUCCESS_HEADERS);
+            $this->sendOutput($responseData, self::SUCCESS_HEADERS);
         } else {
             $this->sendOutput(
                 json_encode(['error' => $strErrorDesc]),

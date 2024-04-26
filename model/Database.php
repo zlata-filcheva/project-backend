@@ -52,12 +52,18 @@ class Database
                 throw New Exception("Unable to do prepared statement: " . $query);
             }
 
+            print_r($params);
+            
             if(!isset($params)) {
                 foreach ($params as &$value) {
                     $value = $this->connection->real_escape_string($value);
                 }
 
                 unset($value);
+
+                echo $types;
+                echo "<br />";
+                print_r($params);
 
                 $stmt->bind_param($types, ...$params);
             }
