@@ -25,7 +25,7 @@ class TagsModel extends Database
     public function createTags($tags = [])
     {
         foreach ($tags as $tag) {
-            return $this->insert(CREATE_TAGS_SQL, 's', [$tag]);
+            $this->insert(CREATE_TAGS_SQL, 's', [$tag]);
         }
     }
 }
