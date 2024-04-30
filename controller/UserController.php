@@ -2,49 +2,82 @@
 
 class UserController extends BaseController
 {
-    public function check()
+    public function has()
     {
         $strErrorDesc = '';
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-        $arrQueryStringParams = $this->getQueryStringParams();
         $responseData = "";
+        $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) == 'GET') {
-            try {
-                if (!isset($arrQueryStringParams['email']) && $arrQueryStringParams['email']) {
-                    throw new Error('No email and password!');
-                }
+        if (strtoupper($requestMethod) !== 'GET') {
+            $this->sendOutput(
+                json_encode(self::RESPONSE_DATA_DECODED_422),
+                self::HEADERS_422
+            );
 
-                if (!isset($arrQueryStringParams['password']) && $arrQueryStringParams['password']) {
-                    throw new Error('No email and password!');
-                }
-
-                $userModel = new UserModel();
-
-                [
-                    'email' => $email,
-                    'password' => $password
-                ] = $arrQueryStringParams;
-
-                $arrUsers = $userModel->hasUser($email, $password);
-                $responseData = json_encode($arrUsers[0]);
-            } catch (Error $e) {
-                $strErrorDesc = $e->getMessage().'Something went wrong! Please contact support.';
-                $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';
-            }
-        } else {
-            $strErrorDesc = 'Method not supported';
-            $strErrorHeader = 'HTTP/1.1 422 Unprocessable Entity';
+            return;
         }
 
-        // send output
-        if (!$strErrorDesc) {
-            $this->sendOutput($responseData, self::SUCCESS_HEADERS);
-        } else {
+        $arrQueryStringParams = $this->getQueryStringParams();
+
+
+        try {
+            if (!isset($arrQueryStringParams['oauthId']) && !$arrQueryStringParams['oauthId']) {
+                throw new Error('No oauthId!');
+            }
+
+            $userModel = new UserModel();
+
+            ['oauthId' => $oauthId] = $arrQueryStringParams;
+
+            $arrUsers = $userModel->hasUser($oauthId);
+            $responseData = json_encode($arrUsers[0]);
+            $httpResponseHeader = self::HEADERS_200;
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
+        }
+    }
+
+    public function add()
+    {
+        $responseData = "";
+        $httpResponseHeader = "";
+        $requestMethod = $_SERVER["REQUEST_METHOD"];
+
+        if (strtoupper($requestMethod) !== 'POST' && !isset($_POST["user"])) {
             $this->sendOutput(
-                json_encode(['error' => $strErrorDesc]),
-                ['Content-Type: application/json', $strErrorHeader]
+                json_encode(self::RESPONSE_DATA_DECODED_422),
+                self::HEADERS_422
             );
+
+            return;
+        }
+
+        try {
+            $model = new UserModel();
+
+            $user = $_POST["user"];
+
+            $response = $model->createUser($user);
+
+            $responseData = json_encode($response);
+            $httpResponseHeader = self::HEADERS_200;
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
         }
     }
 }
