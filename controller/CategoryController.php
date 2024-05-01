@@ -1,6 +1,6 @@
 <?php
 
-class CategoriesController extends BaseController
+class CategoryController extends BaseController
 {
     public function get()
     {
@@ -41,7 +41,7 @@ class CategoriesController extends BaseController
         $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'POST' && !isset($_POST["tags"])) {
+        if (strtoupper($requestMethod) !== 'POST' && !isset($_POST["category"])) {
             $this->sendOutput(
                 json_encode(self::RESPONSE_DATA_DECODED_422),
                 self::HEADERS_422
@@ -53,9 +53,9 @@ class CategoriesController extends BaseController
         try {
             $model = new CategoriesModel();
 
-            $categories = $_POST["categories"];
+            $category = $_POST["category"];
 
-            $response = $model->createTags($categories);
+            $response = $model->createCategory($category);
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;

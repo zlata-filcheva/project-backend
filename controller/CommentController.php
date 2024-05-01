@@ -1,6 +1,6 @@
 <?php
 
-class CommentsController extends BaseController
+class CommentController extends BaseController
 {
     public function get()
     {

@@ -59,7 +59,7 @@ WHERE
     userId = ? AND postId = ?
 SQL;
 
-class CommentsModel extends Database
+class CommentModel extends Database
 {
     public function getComments($rowCount, $offset)
     {

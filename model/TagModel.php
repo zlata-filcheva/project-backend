@@ -15,7 +15,7 @@ INSERT INTO tags (
 ) VALUES (?)
 SQL;
 
-class TagsModel extends Database
+class TagModel extends Database
 {
     public function getTags()
     {

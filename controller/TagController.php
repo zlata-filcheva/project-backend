@@ -1,6 +1,6 @@
 <?php
 
-class TagsController extends BaseController
+class TagController extends BaseController
 {
     public function get()
     {

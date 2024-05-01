@@ -9,23 +9,21 @@ FROM categories
 ORDER BY name ASC 
 SQL;
 
-const CREATE_CATEGORIES_SQL = <<<'SQL'
+const CREATE_CATEGORY_SQL = <<<'SQL'
 INSERT INTO categories (
     name
 ) VALUES (?)
 SQL;
 
-class CategoriesModel extends Database
+class CategoryModel extends Database
 {
     public function getCategories()
     {
         return $this->selectData(GET_CATEGORIES_SQL);
     }
 
-    public function createCategories($categories = [])
+    public function createCategory($category = '')
     {
-        foreach ($categories as $category) {
-            $this->modifyData(CREATE_CATEGORIES_SQL, 's', [$category]);
-        }
+        $this->modifyData(CREATE_CATEGORY_SQL, 's', [$category]);
     }
 }
