@@ -2,6 +2,15 @@
 
 class UserController extends BaseController
 {
+    public function hasUser($id): bool
+    {
+        $model = new UserModel();
+
+        $response = $model->getUser($id);
+
+        return (count($response) > 0);
+    }
+
     public function get()
     {
         $strErrorDesc = '';

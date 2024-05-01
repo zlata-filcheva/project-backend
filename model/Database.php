@@ -54,6 +54,12 @@ class Database
 
             if(count($params) > 0) {
                 foreach ($params as &$value) {
+                    if (is_array($value)) {
+                        $value = json_encode($value);
+
+                        break;
+                    }
+
                     $value = $this->connection->real_escape_string($value);
                 }
 

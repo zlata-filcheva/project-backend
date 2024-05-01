@@ -2,6 +2,19 @@
 
 class TagController extends BaseController
 {
+    public function hasTags($ids): bool
+    {
+        if (count($ids) > 5) {
+            return false;
+        }
+
+        $model = new TagModel();
+
+        $response = $model->getSelectedTagsList($ids);
+
+        return (count($response) > 0);
+    }
+
     public function get()
     {
         $responseData = "";
@@ -20,7 +33,7 @@ class TagController extends BaseController
         try {
             $model = new TagModel();
 
-            $response = $model->getTags();
+            $response = $model->getTagsList();
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;

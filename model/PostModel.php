@@ -10,8 +10,8 @@ SELECT
     topic,
     categoryId,
     userId,
-    tags
-FROM tags 
+    tagIds
+FROM posts 
 ORDER BY creationDate DESC 
 LIMIT ? OFFSET ?
 SQL;
@@ -22,7 +22,7 @@ INSERT INTO posts (
     topic,
     categoryId,
     userId,
-    tags
+    tagIds
 ) VALUES (?, ?, ?, ?, ?)
 SQL;
 
@@ -35,10 +35,10 @@ class PostModel extends Database
         return $this->selectData(GET_POST_SQL, 'ii', $params);
     }
 
-    public function createPost($content, $topic, $categoryId, $userId, $tags)
+    public function createPost($content, $topic, $categoryId, $userId, $tagIds)
     {
-        $params = [$content, $topic, $categoryId, $userId, $tags];
+        $params = [$content, $topic, $categoryId, $userId, $tagIds];
 
-        $this->modifyData(CREATE_POST_SQL, 'ssiis', $params);
+        $this->modifyData(CREATE_POST_SQL, 'ssiss', $params);
     }
 }

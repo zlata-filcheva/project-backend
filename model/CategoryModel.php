@@ -1,7 +1,15 @@
 <?php
 require_once PROJECT_ROOT_PATH . "/model/Database.php";
 
-const GET_CATEGORIES_SQL = <<<'SQL'
+const GET_CATEGORY_SQL = <<<'SQL'
+SELECT 
+    id,
+    name
+FROM categories 
+WHERE id = ?
+SQL;
+
+const GET_CATEGORIES_LIST_SQL = <<<'SQL'
 SELECT 
     id, 
     name
@@ -17,9 +25,14 @@ SQL;
 
 class CategoryModel extends Database
 {
-    public function getCategories()
+    public function getCategory($id)
     {
-        return $this->selectData(GET_CATEGORIES_SQL);
+        return $this->selectData(GET_CATEGORY_SQL, 'i', [$id]);
+    }
+
+    public function getCategoriesList()
+    {
+        return $this->selectData(GET_CATEGORIES_LIST_SQL);
     }
 
     public function createCategory($category = '')

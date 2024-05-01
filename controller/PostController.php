@@ -71,7 +71,7 @@ class PostController extends BaseController
             $_POST['topic'],
             $_POST['categoryId'],
             $_POST['userId'],
-            $_POST['tags']
+            $_POST['tagIds']
         ];
 
         foreach ($expectedPostVariables as $value) {
@@ -88,13 +88,56 @@ class PostController extends BaseController
         try {
             $model = new PostModel();
 
+            $userController = new UserController();
+            $categoryController = new CategoryController();
+            $tagController = new TagController();
+
             $content = $_POST['content'];
             $topic = $_POST['topic'];
             $categoryId = $_POST['categoryId'];
             $userId = $_POST['userId'];
-            $tags = $_POST['tags'];
+            $tagIds = $_POST['tagIds'];
 
-            $response = $model->createPost($content, $topic, $categoryId, $userId, $tags);
+            $hasUser = $userController->hasUser($userId);
+
+            if (!$hasUser) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
+
+            $hasCategory = $categoryController->hasCategory($categoryId);
+
+            if (!$hasCategory) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
+
+            $hasTags = $tagController->hasTags($tagIds);
+
+            if (!$hasTags) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
+
+            $assoc_array = array();
+
+            foreach ($tagIds as $value) {
+                $assoc_array[] = array("tagId" => $value);
+            }
+
+            $response = $model->createPost($content, $topic, $categoryId, $userId, $assoc_array);
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;

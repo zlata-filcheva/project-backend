@@ -2,6 +2,15 @@
 
 class CategoryController extends BaseController
 {
+    public function hasCategory($id): bool
+    {
+        $model = new CategoryModel();
+
+        $response = $model->getCategory($id);
+
+        return (count($response) > 0);
+    }
+
     public function get()
     {
         $responseData = "";
@@ -20,7 +29,7 @@ class CategoryController extends BaseController
         try {
             $model = new CategoryModel();
 
-            $response = $model->getCategories();
+            $response = $model->getCategoriesList();
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
