@@ -13,7 +13,7 @@ SELECT
     tags
 FROM tags 
 ORDER BY creationDate DESC 
-LIMIT ?,?
+LIMIT ? OFFSET ?
 SQL;
 
 const CREATE_POST_SQL = <<<'SQL'
@@ -28,15 +28,17 @@ SQL;
 
 class PostModel extends Database
 {
-    public function getPosts($startPos, $endPos)
+    public function getPosts($rowCount, $offset)
     {
-        return $this->select(GET_POST_SQL, 'ii', [$startPos, $endPos]);
+        $params = [$rowCount, $offset];
+
+        return $this->selectData(GET_POST_SQL, 'ii', $params);
     }
 
-    public function addPost($content, $topic, $categoryId, $userId, $tags)
+    public function createPost($content, $topic, $categoryId, $userId, $tags)
     {
         $params = [$content, $topic, $categoryId, $userId, $tags];
 
-        return $this->insert(CREATE_POST_SQL, 'ssiis', $params);
+        $this->modifyData(CREATE_POST_SQL, 'ssiis', $params);
     }
 }

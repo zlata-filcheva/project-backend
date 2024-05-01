@@ -19,17 +19,17 @@ class UserController extends BaseController
 
         $arrQueryStringParams = $this->getQueryStringParams();
 
-
         try {
             if (!isset($arrQueryStringParams['oauthId']) && !$arrQueryStringParams['oauthId']) {
                 throw new Error('No oauthId!');
             }
 
-            $userModel = new UserModel();
+            $model = new UserModel();
 
             ['oauthId' => $oauthId] = $arrQueryStringParams;
 
-            $arrUsers = $userModel->hasUser($oauthId);
+            $arrUsers = $model->hasUser($oauthId);
+
             $responseData = json_encode($arrUsers[0]);
             $httpResponseHeader = self::HEADERS_200;
         }

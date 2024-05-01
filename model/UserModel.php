@@ -21,11 +21,11 @@ class UserModel extends Database
 {
     public function hasUser($oauthId)
     {
-        return $this->select(HAS_USER_SQL, 's', [$oauthId]);
+        return $this->selectData(HAS_USER_SQL, 's', [$oauthId]);
     }
 
     public function createUser($user = [])
     {
-        $this->insert(CREATE_TAGS_SQL, 'ssss', [$user]);
+        $this->modifyData(CREATE_TAGS_SQL, 'ssss', [$user]);
     }
 }

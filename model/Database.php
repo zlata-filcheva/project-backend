@@ -17,7 +17,7 @@ class Database
         }
     }
 
-    protected function select($query = "", $types = '', $params = [])
+    protected function selectData($query = "", $types = '', $params = [])
     {
         try {
             $stmt = $this->executeStatement($query, $types, $params);
@@ -30,7 +30,7 @@ class Database
         return false;
     }
 
-    protected function insert($query = "", $types, $params = [])
+    protected function modifyData($query = "", $types, $params = [])
     {
         try {
             $stmt = $this->executeStatement($query, $types, $params);

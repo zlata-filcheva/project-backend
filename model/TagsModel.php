@@ -19,13 +19,13 @@ class TagsModel extends Database
 {
     public function getTags()
     {
-        return $this->select(GET_TAGS_SQL);
+        return $this->selectData(GET_TAGS_SQL);
     }
 
     public function createTags($tags = [])
     {
         foreach ($tags as $tag) {
-            $this->insert(CREATE_TAGS_SQL, 's', [$tag]);
+            $this->modifyData(CREATE_TAGS_SQL, 's', [$tag]);
         }
     }
 }

@@ -19,13 +19,13 @@ class CategoriesModel extends Database
 {
     public function getCategories()
     {
-        return $this->select(GET_CATEGORIES_SQL);
+        return $this->selectData(GET_CATEGORIES_SQL);
     }
 
     public function createCategories($categories = [])
     {
         foreach ($categories as $category) {
-            $this->insert(CREATE_CATEGORIES_SQL, 's', [$category]);
+            $this->modifyData(CREATE_CATEGORIES_SQL, 's', [$category]);
         }
     }
 }
