@@ -86,10 +86,34 @@ class CommentController extends BaseController
         try {
             $model = new CommentModel();
 
+            $userController = new UserController();
+            $postController = new PostController();
+
             $userId = $_POST['userId'];
             $content = $_POST['content'];
             $postId = $_POST['postId'];
 
+            $hasUser = $userController->hasUser($userId);
+
+            if (!$hasUser) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
+
+            $hasPost = $postController->hasPost($postId);
+
+            if (!$hasPost) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
 
             $response = $model->createComment($userId, $content, $postId);
 

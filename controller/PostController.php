@@ -2,6 +2,15 @@
 
 class PostController extends BaseController
 {
+    public function hasPost($id): bool
+    {
+        $model = new PostModel();
+
+        $response = $model->getPost($id);
+
+        return (count($response) > 0);
+    }
+
     public function get()
     {
         $strErrorDesc = '';
@@ -35,7 +44,7 @@ class PostController extends BaseController
                 'offset' => $offset
             ] = $arrQueryStringParams;
 
-            $response = $model->getPosts($rowCount, $offset);
+            $response = $model->getPostsList($rowCount, $offset);
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
