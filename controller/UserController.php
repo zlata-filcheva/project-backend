@@ -2,7 +2,7 @@
 
 class UserController extends BaseController
 {
-    public function has()
+    public function get()
     {
         $strErrorDesc = '';
         $responseData = "";
@@ -20,17 +20,18 @@ class UserController extends BaseController
         $arrQueryStringParams = $this->getQueryStringParams();
 
         try {
-            if (!isset($arrQueryStringParams['oauthId']) && !$arrQueryStringParams['oauthId']) {
+            if (!isset($arrQueryStringParams['id']) && !$arrQueryStringParams['id']) {
                 throw new Error('No oauthId!');
             }
 
             $model = new UserModel();
 
-            ['oauthId' => $oauthId] = $arrQueryStringParams;
+            ['id' => $id] = $arrQueryStringParams;
 
-            $arrUsers = $model->hasUser($oauthId);
+            $response = $model->getUser($id);
+            $user = $response[0];
 
-            $responseData = json_encode($arrUsers[0]);
+            $responseData = json_encode($user);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -50,7 +51,7 @@ class UserController extends BaseController
         $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'POST' && !isset($_POST["user"])) {
+        if (strtoupper($requestMethod) !== 'POST') {
             $this->sendOutput(
                 json_encode(self::RESPONSE_DATA_DECODED_422),
                 self::HEADERS_422
@@ -59,12 +60,33 @@ class UserController extends BaseController
             return;
         }
 
+        $expectedPostVariables = [
+            $_POST['id'],
+            $_POST['nickName'],
+            $_POST['name'],
+            $_POST['surname'],
+        ];
+
+        foreach ($expectedPostVariables as $value) {
+            if (!isset($value)) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
+        }
+
         try {
             $model = new UserModel();
 
-            $user = $_POST["user"];
+            $id = $_POST['id'];
+            $nickName = $_POST['nickName'];
+            $name = $_POST['name'];
+            $surname = $_POST['surname'];
 
-            $response = $model->createUser($user);
+            $response = $model->createUser($id, $nickName, $name, $surname);
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;

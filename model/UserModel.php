@@ -1,31 +1,36 @@
 <?php
 require_once PROJECT_ROOT_PATH . "/model/Database.php";
 
-const HAS_USER_SQL = <<<'SQL'
+const GET_USER_SQL = <<<'SQL'
 SELECT 
-    oauthId
-FROM users 
-WHERE oauthId=?
-SQL;
-
-const CREATE_USER_SQL = <<<'SQL'
-INSERT INTO tags (
-    oauthId,
+    id,
     nickName,
     name,
     surname
-) VALUES (?)
+FROM users 
+WHERE id = ?
+SQL;
+
+const CREATE_USER_SQL = <<<'SQL'
+INSERT INTO users (
+    id,
+    nickName,
+    name,
+    surname
+) VALUES (?, ?, ?, ?)
 SQL;
 
 class UserModel extends Database
 {
-    public function hasUser($oauthId)
+    public function getUser($id)
     {
-        return $this->selectData(HAS_USER_SQL, 's', [$oauthId]);
+        return $this->selectData(GET_USER_SQL, 's', [$id]);
     }
 
-    public function createUser($user = [])
+    public function createUser($id, $nickName, $name, $surname)
     {
-        $this->modifyData(CREATE_TAGS_SQL, 'ssss', [$user]);
+        $params = [$id, $nickName, $name, $surname];
+
+        $this->modifyData(CREATE_USER_SQL, 'ssss', $params);
     }
 }
