@@ -51,8 +51,8 @@ class Database
             if($stmt === false) {
                 throw New Exception("Unable to do prepared statement: " . $query);
             }
-            
-            if(isset($params)) {
+
+            if(count($params) > 0) {
                 foreach ($params as &$value) {
                     $value = $this->connection->real_escape_string($value);
                 }

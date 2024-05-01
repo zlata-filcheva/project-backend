@@ -21,6 +21,8 @@ class CategoryController extends BaseController
             $model = new CategoryModel();
 
             $response = $model->getCategories();
+
+            $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -54,8 +56,6 @@ class CategoryController extends BaseController
             $model = new CategoryModel();
 
             $category = $_POST["category"];
-
-            echo $category;
 
             $response = $model->createCategory($category);
 
