@@ -35,7 +35,7 @@ class CategoriesController extends BaseController
         }
     }
 
-    public function add()
+    public function create()
     {
         $responseData = "";
         $httpResponseHeader = "";

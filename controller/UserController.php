@@ -44,7 +44,7 @@ class UserController extends BaseController
         }
     }
 
-    public function add()
+    public function create()
     {
         $responseData = "";
         $httpResponseHeader = "";
