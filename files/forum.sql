@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 26, 2024 at 07:53 PM
+-- Generation Time: May 01, 2024 at 09:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,8 +61,8 @@ CREATE TABLE `posts` (
   `updateDate` datetime NOT NULL DEFAULT current_timestamp(),
   `topic` varchar(255) NOT NULL,
   `categoryId` int(8) NOT NULL,
-  `userId` int(8) NOT NULL,
-  `tags` varchar(255) NOT NULL
+  `userId` varchar(255) NOT NULL,
+  `tagIds` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`tagIds`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -84,24 +84,14 @@ CREATE TABLE `tags` (
 --
 
 CREATE TABLE `users` (
-  `id` int(8) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `creationDate` datetime NOT NULL DEFAULT current_timestamp(),
-  `updateDate` datetime NOT NULL DEFAULT current_timestamp(),
-  `role` varchar(255) NOT NULL DEFAULT 'user'
+  `id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `surname` varchar(255) NOT NULL,
+  `nickName` varchar(255) NOT NULL,
+  `role` varchar(255) NOT NULL DEFAULT 'user',
+  `creationData` date NOT NULL DEFAULT current_timestamp(),
+  `updateData` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `password`, `email`, `creationDate`, `updateDate`, `role`) VALUES
-(1, 'password1', 'user1@example.com', '2024-04-15 21:45:36', '2024-04-15 21:45:36', 'user'),
-(2, 'password2', 'user2@example.com', '2024-04-15 21:45:36', '2024-04-15 21:45:36', 'user'),
-(3, 'password3', 'user3@example.com', '2024-04-15 21:45:36', '2024-04-15 21:45:36', 'user'),
-(4, 'password4', 'user4@example.com', '2024-04-15 21:45:36', '2024-04-15 21:45:36', 'user'),
-(5, 'password5', 'user5@example.com', '2024-04-15 21:45:36', '2024-04-15 21:45:36', 'user');
 
 --
 -- Indexes for dumped tables
@@ -111,7 +101,8 @@ INSERT INTO `users` (`id`, `password`, `email`, `creationDate`, `updateDate`, `r
 -- Indexes for table `categories`
 --
 ALTER TABLE `categories`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indexes for table `comments`
@@ -136,9 +127,8 @@ ALTER TABLE `tags`
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `id` (`id`);
+  ADD UNIQUE KEY `id` (`id`),
+  ADD UNIQUE KEY `nickName` (`nickName`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -148,7 +138,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `comments`
@@ -160,19 +150,13 @@ ALTER TABLE `comments`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
