@@ -28,7 +28,7 @@ class CommentController extends BaseController
                 throw new Error('No offset');
             }
 
-            $model = new CommentsModel();
+            $model = new CommentModel();
 
             [
                 'rowCount' => $rowCount,
@@ -84,7 +84,7 @@ class CommentController extends BaseController
         }
 
         try {
-            $model = new CommentsModel();
+            $model = new CommentModel();
 
             $userId = $_POST['userId'];
             $content = $_POST['content'];

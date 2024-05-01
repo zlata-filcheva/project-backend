@@ -18,7 +18,7 @@ class TagController extends BaseController
         }
 
         try {
-            $model = new TagsModel();
+            $model = new TagModel();
 
             $response = $model->getTags();
 
@@ -53,7 +53,7 @@ class TagController extends BaseController
         }
 
         try {
-            $model = new TagsModel();
+            $model = new TagModel();
 
             $tags = $_POST["tags"];
 

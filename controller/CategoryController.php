@@ -18,7 +18,7 @@ class CategoryController extends BaseController
         }
 
         try {
-            $model = new CategoriesModel();
+            $model = new CategoryModel();
 
             $response = $model->getCategories();
             $httpResponseHeader = self::HEADERS_200;
@@ -51,9 +51,11 @@ class CategoryController extends BaseController
         }
 
         try {
-            $model = new CategoriesModel();
+            $model = new CategoryModel();
 
             $category = $_POST["category"];
+
+            echo $category;
 
             $response = $model->createCategory($category);
 

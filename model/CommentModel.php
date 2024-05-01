@@ -82,31 +82,26 @@ class CommentModel extends Database
     }
 
     public function updateCommentAddLike($userId, $postId) {
-        $params = [$content, $userId, $postId];
+        $params = [$userId, $postId];
 
         $this->modifyData(UPDATE_COMMENT_ADD_LIKE_SQL, 'sii', $params);
     }
 
     public function updateCommentRemoveLike($userId, $postId) {
-        $params = [$content, $userId, $postId];
+        $params = [$userId, $postId];
 
         $this->modifyData(UPDATE_COMMENT_REMOVE_LIKE_SQL, 'sii', $params);
     }
 
     public function updateCommentAddDislike($userId, $postId) {
-        $params = [$content, $userId, $postId];
+        $params = [$userId, $postId];
 
         $this->modifyData(UPDATE_COMMENT_ADD_DISLIKE_SQL, 'sii', $params);
     }
 
     public function updateCommentRemoveDislike($userId, $postId) {
-        $params = [$content, $userId, $postId];
+        $params = [$userId, $postId];
 
         $this->modifyData(UPDATE_COMMENT_REMOVE_DISLIKE_SQL, 'sii', $params);
     }
 }
-
-
-
-
-UPDATE_COMMENT_DISLIKES_SQL
