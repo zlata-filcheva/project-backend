@@ -1,20 +1,24 @@
 <?php
 
-class UserController extends BaseController
+class TagController extends BaseController
 {
-    public function hasUser($id): bool
+    public function hasTags($ids): bool
     {
-        $model = new UserModel();
+        if (count($ids) > 5) {
+            return false;
+        }
 
-        $response = $model->getUser($id);
+        $model = new TagModel();
+
+        $response = $model->getSelectedTagsList($ids);
 
         return (count($response) > 0);
     }
 
     public function get()
     {
-        $strErrorDesc = '';
         $responseData = "";
+        $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
         if (strtoupper($requestMethod) !== 'GET') {
@@ -26,21 +30,12 @@ class UserController extends BaseController
             return;
         }
 
-        $arrQueryStringParams = $this->getQueryStringParams();
-
         try {
-            if (!isset($arrQueryStringParams['id']) && !$arrQueryStringParams['id']) {
-                throw new Error('No oauthId!');
-            }
+            $model = new TagModel();
 
-            $model = new UserModel();
+            $response = $model->getTagsList();
 
-            ['id' => $id] = $arrQueryStringParams;
-
-            $response = $model->getUser($id);
-            $user = $response[0];
-
-            $responseData = json_encode($user);
+            $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -48,6 +43,7 @@ class UserController extends BaseController
 
             $responseData = json_encode(['error' => $strErrorDesc]);
             $httpResponseHeader = self::HEADERS_500;
+
         }
         finally {
             $this->sendOutput($responseData, $httpResponseHeader);
@@ -60,7 +56,7 @@ class UserController extends BaseController
         $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'POST') {
+        if (strtoupper($requestMethod) !== 'POST' && !isset($_POST["tags"])) {
             $this->sendOutput(
                 json_encode(self::RESPONSE_DATA_DECODED_422),
                 self::HEADERS_422
@@ -69,33 +65,12 @@ class UserController extends BaseController
             return;
         }
 
-        $expectedPostVariables = [
-            $_POST['id'],
-            $_POST['nickName'],
-            $_POST['name'],
-            $_POST['surname'],
-        ];
-
-        foreach ($expectedPostVariables as $value) {
-            if (!isset($value)) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
-
-                return;
-            }
-        }
-
         try {
-            $model = new UserModel();
+            $model = new TagModel();
 
-            $id = $_POST['id'];
-            $nickName = $_POST['nickName'];
-            $name = $_POST['name'];
-            $surname = $_POST['surname'];
+            $tags = $_POST["tags"];
 
-            $response = $model->createUser($id, $nickName, $name, $surname);
+            $response = $model->createTags($tags);
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;

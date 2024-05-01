@@ -1,19 +1,36 @@
 <?php
 require_once PROJECT_ROOT_PATH . "/model/Database.php";
 
-const HAS_USER_SQL = <<<'SQL'
+const GET_USER_SQL = <<<'SQL'
 SELECT 
-    id, 
-    email,
-    role
+    id,
+    nickName,
+    name,
+    surname
 FROM users 
-WHERE email=? AND password=?
+WHERE id = ?
+SQL;
+
+const CREATE_USER_SQL = <<<'SQL'
+INSERT INTO users (
+    id,
+    nickName,
+    name,
+    surname
+) VALUES (?, ?, ?, ?)
 SQL;
 
 class UserModel extends Database
 {
-    public function hasUser($email, $password)
+    public function getUser($id)
     {
-        return $this->select(HAS_USER_SQL, 'ss', [$email, $password]);
+        return $this->selectData(GET_USER_SQL, 's', [$id]);
+    }
+
+    public function createUser($id, $nickName, $name, $surname)
+    {
+        $params = [$id, $nickName, $name, $surname];
+
+        $this->modifyData(CREATE_USER_SQL, 'ssss', $params);
     }
 }

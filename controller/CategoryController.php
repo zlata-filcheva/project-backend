@@ -1,20 +1,20 @@
 <?php
 
-class UserController extends BaseController
+class CategoryController extends BaseController
 {
-    public function hasUser($id): bool
+    public function hasCategory($id): bool
     {
-        $model = new UserModel();
+        $model = new CategoryModel();
 
-        $response = $model->getUser($id);
+        $response = $model->getCategory($id);
 
         return (count($response) > 0);
     }
 
     public function get()
     {
-        $strErrorDesc = '';
         $responseData = "";
+        $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
         if (strtoupper($requestMethod) !== 'GET') {
@@ -26,21 +26,12 @@ class UserController extends BaseController
             return;
         }
 
-        $arrQueryStringParams = $this->getQueryStringParams();
-
         try {
-            if (!isset($arrQueryStringParams['id']) && !$arrQueryStringParams['id']) {
-                throw new Error('No oauthId!');
-            }
+            $model = new CategoryModel();
 
-            $model = new UserModel();
+            $response = $model->getCategoriesList();
 
-            ['id' => $id] = $arrQueryStringParams;
-
-            $response = $model->getUser($id);
-            $user = $response[0];
-
-            $responseData = json_encode($user);
+            $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -48,6 +39,7 @@ class UserController extends BaseController
 
             $responseData = json_encode(['error' => $strErrorDesc]);
             $httpResponseHeader = self::HEADERS_500;
+
         }
         finally {
             $this->sendOutput($responseData, $httpResponseHeader);
@@ -60,7 +52,7 @@ class UserController extends BaseController
         $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'POST') {
+        if (strtoupper($requestMethod) !== 'POST' && !isset($_POST["category"])) {
             $this->sendOutput(
                 json_encode(self::RESPONSE_DATA_DECODED_422),
                 self::HEADERS_422
@@ -69,33 +61,12 @@ class UserController extends BaseController
             return;
         }
 
-        $expectedPostVariables = [
-            $_POST['id'],
-            $_POST['nickName'],
-            $_POST['name'],
-            $_POST['surname'],
-        ];
-
-        foreach ($expectedPostVariables as $value) {
-            if (!isset($value)) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
-
-                return;
-            }
-        }
-
         try {
-            $model = new UserModel();
+            $model = new CategoryModel();
 
-            $id = $_POST['id'];
-            $nickName = $_POST['nickName'];
-            $name = $_POST['name'];
-            $surname = $_POST['surname'];
+            $category = $_POST["category"];
 
-            $response = $model->createUser($id, $nickName, $name, $surname);
+            $response = $model->createCategory($category);
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
