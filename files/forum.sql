@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 01, 2024 at 09:08 PM
+-- Generation Time: May 01, 2024 at 09:50 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,6 +33,13 @@ CREATE TABLE `categories` (
   `description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `description`) VALUES
+(4, 'food', '');
+
 -- --------------------------------------------------------
 
 --
@@ -41,12 +48,19 @@ CREATE TABLE `categories` (
 
 CREATE TABLE `comments` (
   `id` int(11) NOT NULL,
-  `userId` int(10) NOT NULL,
+  `userId` varchar(255) NOT NULL,
   `content` varchar(255) NOT NULL,
   `likes` int(11) NOT NULL,
   `dislikes` int(11) NOT NULL,
   `postId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `comments`
+--
+
+INSERT INTO `comments` (`id`, `userId`, `content`, `likes`, `dislikes`, `postId`) VALUES
+(4, 'superUser', 'I like to eat pigeons', 0, 0, 3);
 
 -- --------------------------------------------------------
 
@@ -65,6 +79,13 @@ CREATE TABLE `posts` (
   `tagIds` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`tagIds`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `posts`
+--
+
+INSERT INTO `posts` (`id`, `content`, `creationDate`, `updateDate`, `topic`, `categoryId`, `userId`, `tagIds`) VALUES
+(3, 'Kebab is very tasty. Some people call it Doner, Shaurma and Pigeon&Cat&Dog the force source ', '2024-05-01 22:34:17', '2024-05-01 22:34:17', 'kebab', 4, 'superUser', '[{\"tagId\":\"27\"},{\"tagId\":\"28\"}]');
+
 -- --------------------------------------------------------
 
 --
@@ -76,6 +97,14 @@ CREATE TABLE `tags` (
   `name` varchar(255) NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tags`
+--
+
+INSERT INTO `tags` (`id`, `name`, `date`) VALUES
+(27, 'mexican', '2024-05-01 22:31:30'),
+(28, 'food', '2024-05-01 22:31:30');
 
 -- --------------------------------------------------------
 
@@ -92,6 +121,13 @@ CREATE TABLE `users` (
   `creationData` date NOT NULL DEFAULT current_timestamp(),
   `updateData` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `surname`, `nickName`, `role`, `creationData`, `updateData`) VALUES
+('superUser', 'John', 'Allen', 'kebab', 'user', '2024-05-01', '2024-05-01');
 
 --
 -- Indexes for dumped tables
@@ -138,25 +174,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

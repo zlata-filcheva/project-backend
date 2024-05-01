@@ -4,16 +4,14 @@ require_once PROJECT_ROOT_PATH . "/model/Database.php";
 const GET_COMMENTS_SQL = <<<'SQL'
 SELECT 
     id, 
-    content, 
-    creationDate,
-    updateDate,
-    topic,
-    categoryId,
-    userId,
-    tags
+    userId, 
+    content,
+    likes,
+    dislikes,
+    postId
 FROM comments 
-ORDER BY creationDate DESC 
-LIMIT ?,?
+WHERE postId = ?
+LIMIT ? OFFSET ?
 SQL;
 
 const CREATE_COMMENT_SQL = <<<'SQL'
@@ -61,18 +59,18 @@ SQL;
 
 class CommentModel extends Database
 {
-    public function getComments($rowCount, $offset)
+    public function getCommentsList($postId, $rowCount, $offset)
     {
-        $params = [$rowCount, $offset];
+        $params = [$postId, $rowCount, $offset];
 
-        return $this->selectData(GET_COMMENTS_SQL, 'ii', $params);
+        return $this->selectData(GET_COMMENTS_SQL, 'iii', $params);
     }
 
     public function createComment($userId, $content, $postId)
     {
         $params = [$userId, $content, $postId];
 
-        $this->modifyData(CREATE_COMMENT_SQL, 'isi', $params);
+        $this->modifyData(CREATE_COMMENT_SQL, 'ssi', $params);
     }
 
     public function updateCommentContent($content, $userId, $postId) {
