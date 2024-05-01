@@ -35,6 +35,8 @@ class BaseController
 
     #[NoReturn] protected function sendOutput($data, $httpHeaders=array())
     {
+        $requestMethod = $_SERVER["REQUEST_METHOD"];
+
         header_remove('Set-Cookie');
 
         if (is_array($httpHeaders) && count($httpHeaders)) {
@@ -43,7 +45,10 @@ class BaseController
             }
         }
 
-        //echo $data;
+        if (strtoupper($requestMethod) === 'GET') {
+            echo $data;
+        }
+
         exit;
     }
 }
