@@ -1,6 +1,6 @@
 <?php
 
-class PostController extends BaseController
+class CommentsController extends BaseController
 {
     public function get()
     {
@@ -28,14 +28,14 @@ class PostController extends BaseController
                 throw new Error('No offset');
             }
 
-            $model = new PostModel();
+            $model = new CommentsModel();
 
             [
                 'rowCount' => $rowCount,
                 'offset' => $offset
             ] = $arrQueryStringParams;
 
-            $response = $model->getPosts($rowCount, $offset);
+            $response = $model->getComments($rowCount, $offset);
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
@@ -67,11 +67,9 @@ class PostController extends BaseController
         }
 
         $expectedPostVariables = [
-            $_POST['content'],
-            $_POST['topic'],
-            $_POST['categoryId'],
             $_POST['userId'],
-            $_POST['tags']
+            $_POST['content'],
+            $_POST['postId']
         ];
 
         foreach ($expectedPostVariables as $value) {
@@ -86,15 +84,14 @@ class PostController extends BaseController
         }
 
         try {
-            $model = new PostModel();
+            $model = new CommentsModel();
 
-            $content = $_POST['content'];
-            $topic = $_POST['topic'];
-            $categoryId = $_POST['categoryId'];
             $userId = $_POST['userId'];
-            $tags = $_POST['tags'];
+            $content = $_POST['content'];
+            $postId = $_POST['postId'];
 
-            $response = $model->createPost($content, $topic, $categoryId, $userId, $tags);
+
+            $response = $model->createComment($userId, $content, $postId);
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
@@ -110,4 +107,85 @@ class PostController extends BaseController
             $this->sendOutput($responseData, $httpResponseHeader);
         }
     }
+
+    /*
+     * Very big logic
+     */
+    /*
+    public function update()
+    {
+        $responseData = "";
+        $httpResponseHeader = "";
+        $requestMethod = $_SERVER["REQUEST_METHOD"];
+
+        if (strtoupper($requestMethod) !== 'POST') {
+            $this->sendOutput(
+                json_encode(self::RESPONSE_DATA_DECODED_422),
+                self::HEADERS_422
+            );
+
+            return;
+        }
+
+        $obligatoryPostVariables = [
+            $_POST['userId'],
+            $_POST['postId']
+        ];
+
+        $expectedPostVariables = [
+            $_POST['content'],
+            $_POST['likes'],
+            $_POST['dislikes']
+        ];
+
+        foreach ($obligatoryPostVariables as $value) {
+            if (!isset($value)) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
+        }
+
+        $hasExpectedPostVariable = false;
+
+        foreach ($expectedPostVariables as $value) {
+            if (isset($value)) {
+                $hasExpectedPostVariable = true;
+
+                break;
+            }
+        }
+
+        if (!isset($hasExpectedPostVariable)) {
+            $this->sendOutput(
+                json_encode(self::RESPONSE_DATA_DECODED_422),
+                self::HEADERS_422
+            );
+
+            return;
+        }
+
+        try {
+            $model = new CommentsModel();
+
+            $response = $model->createComment($userId, $content, $postId);
+
+            $responseData = json_encode($response);
+            $httpResponseHeader = self::HEADERS_200;
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
+        }
+    }
+    */
 }

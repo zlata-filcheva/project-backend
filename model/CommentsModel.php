@@ -59,7 +59,7 @@ WHERE
     userId = ? AND postId = ?
 SQL;
 
-class PostModel extends Database
+class CommentsModel extends Database
 {
     public function getComments($rowCount, $offset)
     {
@@ -81,25 +81,25 @@ class PostModel extends Database
         $this->modifyData(UPDATE_COMMENT_CONTENT_SQL, 'sii', $params);
     }
 
-    public function updateCommentAddLike($content, $userId, $postId) {
+    public function updateCommentAddLike($userId, $postId) {
         $params = [$content, $userId, $postId];
 
         $this->modifyData(UPDATE_COMMENT_ADD_LIKE_SQL, 'sii', $params);
     }
 
-    public function updateCommentRemoveLike($content, $userId, $postId) {
+    public function updateCommentRemoveLike($userId, $postId) {
         $params = [$content, $userId, $postId];
 
         $this->modifyData(UPDATE_COMMENT_REMOVE_LIKE_SQL, 'sii', $params);
     }
 
-    public function updateCommentAddDislike($content, $userId, $postId) {
+    public function updateCommentAddDislike($userId, $postId) {
         $params = [$content, $userId, $postId];
 
         $this->modifyData(UPDATE_COMMENT_ADD_DISLIKE_SQL, 'sii', $params);
     }
 
-    public function updateCommentRemoveDislike($content, $userId, $postId) {
+    public function updateCommentRemoveDislike($userId, $postId) {
         $params = [$content, $userId, $postId];
 
         $this->modifyData(UPDATE_COMMENT_REMOVE_DISLIKE_SQL, 'sii', $params);
