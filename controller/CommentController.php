@@ -20,6 +20,10 @@ class CommentController extends BaseController
         $arrQueryStringParams = $this->getQueryStringParams();
 
         try {
+            if (!isset($arrQueryStringParams['postId']) && !$arrQueryStringParams['postId']) {
+                throw new Error('No post id');
+            }
+
             if (!isset($arrQueryStringParams['rowCount']) && !$arrQueryStringParams['rowCount']) {
                 throw new Error('No rowCount');
             }
@@ -31,11 +35,12 @@ class CommentController extends BaseController
             $model = new CommentModel();
 
             [
+                'postId' => $postId,
                 'rowCount' => $rowCount,
                 'offset' => $offset
             ] = $arrQueryStringParams;
 
-            $response = $model->getComments($rowCount, $offset);
+            $response = $model->getCommentsList($postId, $rowCount, $offset);
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
@@ -86,10 +91,34 @@ class CommentController extends BaseController
         try {
             $model = new CommentModel();
 
+            $userController = new UserController();
+            $postController = new PostController();
+
             $userId = $_POST['userId'];
             $content = $_POST['content'];
             $postId = $_POST['postId'];
 
+            $hasUser = $userController->hasUser($userId);
+
+            if (!$hasUser) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
+
+            $hasPost = $postController->hasPost($postId);
+
+            if (!$hasPost) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
 
             $response = $model->createComment($userId, $content, $postId);
 
