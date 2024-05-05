@@ -1,6 +1,22 @@
 <?php
 require_once PROJECT_ROOT_PATH . "/model/Database.php";
 
+const IS_AUTHOR_SQL = <<<'SQL'
+SELECT 
+    id, 
+    content, 
+    creationDate,
+    updateDate,
+    topic,
+    categoryId,
+    userId,
+    tagIds
+FROM posts 
+WHERE 
+    id = ?
+    AND userId = ?
+SQL;
+
 const GET_POST_SQL = <<<'SQL'
 SELECT 
     id, 
@@ -40,34 +56,37 @@ INSERT INTO posts (
 ) VALUES (?, ?, ?, ?, ?)
 SQL;
 
-
+const UPDATE_POST_CONTENT_SQL = <<<'SQL'
+UPDATE posts 
+SET content = ?, 
+updateDate = NOW() 
+WHERE 
+    id = ?
+    AND userId = ?
+SQL;
 
 /*
-$sql = "UPDATE posts SET tagIds = CONCAT(tagIds, ', {\"tagId\": \"$newTagId\"}') WHERE tagIds IS NOT NULL";
-
-const CREATE_UPDATE_POST_ADD_TAGS_SQL = <<<'SQL'
+ * UPDATE posts
+ * SET tagIds = CONCAT(tagIds, ', {"tagId": "55"}')
+ */
+const UPDATE_POST_TAGS_SQL = <<<'SQL'
 UPDATE posts
-SET tagIds = CONCAT(tagIds, ', {"tagId": "55"}')
-
-WHERE id = 3 AND tagIds IS NOT NULL;
-
-UPDATE posts 
-SET tagIds = CONCAT(
-    tagIds, 
-    ', {"tagId": \"$newTagId\"}') 
-WHERE 
-    id = ? AND
-    tagIds IS NOT NULL
+SET tagIds = ?
+WHERE
+    id = ?
+    AND userId = ?
 SQL;
-*/
 
 class PostModel extends Database
 {
-    public function getPost($id)
+    public function getPost($id, $isAuthor = false)
     {
         $params = [$id];
 
-        return $this->selectData(GET_POST_SQL, 'i', $params);
+        $query = !$isAuthor ? GET_POST_SQL : IS_AUTHOR_SQL;
+        $types = !$isAuthor ? 'i' : 'is';
+
+        return $this->selectData($query, $types, $params);
     }
 
     public function getPostsList($rowCount, $offset)
@@ -82,5 +101,19 @@ class PostModel extends Database
         $params = [$content, $topic, $categoryId, $userId, $tagIds];
 
         $this->modifyData(CREATE_POST_SQL, 'ssiss', $params);
+    }
+
+    public function updatePostContent($content, $id, $userId)
+    {
+        $params = [$content, $id, $userId];
+
+        $this->modifyData(UPDATE_POST_CONTENT_SQL, 'sis', $params);
+    }
+
+    public function updatePostTags($tagIds, $id, $userId)
+    {
+        $params = [$tagIds, $id, $userId];
+
+        $this->modifyData(UPDATE_POST_TAGS_SQL, 'sis', $params);
     }
 }

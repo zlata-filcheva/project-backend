@@ -51,4 +51,18 @@ class BaseController
 
         exit;
     }
+
+    protected function parseFormData($formData) {
+        $data = [];
+        $matches = [];
+        preg_match_all('/name="([^"]+)"\s*\r?\n\r?\n([^\r\n]*)/', $formData, $matches);
+
+        for ($i = 0; $i < count($matches[0]); $i++) {
+            $name = $matches[1][$i];
+            $value = $matches[2][$i];
+            $data[$name] = trim($value);
+        }
+
+        return $data;
+    }
 }

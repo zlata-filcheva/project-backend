@@ -140,13 +140,127 @@ class PostController extends BaseController
                 return;
             }
 
-            $assoc_array = array();
+            $assocTagIds = [];
 
             foreach ($tagIds as $value) {
-                $assoc_array[] = array("tagId" => $value);
+                $assocTagIds[] = ["tagId" => $value];
             }
 
-            $response = $model->createPost($content, $topic, $categoryId, $userId, $assoc_array);
+            $response = $model->createPost($content, $topic, $categoryId, $userId, $assocTagIds);
+
+            $responseData = json_encode($response);
+            $httpResponseHeader = self::HEADERS_200;
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
+        }
+    }
+
+    public function update()
+    {
+        $response = "";
+        $responseData = "";
+        $httpResponseHeader = "";
+        $requestMethod = $_SERVER["REQUEST_METHOD"];
+
+        if (strtoupper($requestMethod) !== 'PUT') {
+            $this->sendOutput(
+                json_encode(self::RESPONSE_DATA_DECODED_422),
+                self::HEADERS_422
+            );
+
+            return;
+        }
+
+        $inputData = file_get_contents('php://input');
+        $parsedData = $this->parseFormData($inputData);
+
+        $expectedPutKeys = ['postId', 'userId'];
+        $expectedOptionalKeys = ['content', 'tag'];
+        $hasOptionalKey = false;
+
+        foreach ($expectedPutKeys as $value) {
+            if (!array_key_exists($value, $parsedData)) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
+        }
+
+        foreach ($expectedOptionalKeys as $value) {
+            if (array_key_exists($value, $parsedData)) {
+                $hasOptionalKey = true;
+
+                break;
+            }
+        }
+
+        if (!$hasOptionalKey) {
+            $this->sendOutput(
+                json_encode(self::RESPONSE_DATA_DECODED_422),
+                self::HEADERS_422
+            );
+
+            return;
+        }
+
+        try {
+            $model = new PostModel();
+
+            $postId = $parsedData['postId'];
+            $userId = $parsedData['userId'];
+
+            $isAuthor = $this->hasPost($postId, $userId);
+
+            if (!$isAuthor) {
+                $this->sendOutput(
+                    json_encode(self::RESPONSE_DATA_DECODED_422),
+                    self::HEADERS_422
+                );
+
+                return;
+            }
+
+            if (isset($parsedData['content'])) {
+                $content = $parsedData['content'];
+
+                $response = $model->updatePostContent($content, $postId, $userId);
+            }
+
+            if (isset($parsedData['tagIds'])) {
+                $tagIds = $parsedData['tagIds'];
+
+                $tagController = new TagController();
+
+                $hasTags = $tagController->hasTags($tagIds);
+
+                if (!$hasTags) {
+                    $this->sendOutput(
+                        json_encode(self::RESPONSE_DATA_DECODED_422),
+                        self::HEADERS_422
+                    );
+
+                    return;
+                }
+
+                $assocTagIds = [];
+
+                foreach ($tagIds as $value) {
+                    $assocTagIds[] = ["tagId" => $value];
+                }
+
+                $response = $model->updatePostTags($assocTagIds, $postId, $userId);
+            }
 
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;

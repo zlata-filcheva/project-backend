@@ -52,7 +52,6 @@ and JSON_SEARCH( tagIds, 'one', '27', null, '$**.tagId' ) IS NOT NULL ;
 Add
 
 
-UPDATE `posts` SET `tagIds` = '[{\"tagId\":\"27\"},{\"tagId\":\"28\"}]' WHERE `posts`.`id` = 3;
 
 
 UPDATE posts
