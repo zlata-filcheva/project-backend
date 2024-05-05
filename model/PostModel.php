@@ -40,6 +40,9 @@ INSERT INTO posts (
 ) VALUES (?, ?, ?, ?, ?)
 SQL;
 
+
+
+/*
 $sql = "UPDATE posts SET tagIds = CONCAT(tagIds, ', {\"tagId\": \"$newTagId\"}') WHERE tagIds IS NOT NULL";
 
 const CREATE_UPDATE_POST_ADD_TAGS_SQL = <<<'SQL'
@@ -56,6 +59,7 @@ WHERE
     id = ? AND
     tagIds IS NOT NULL
 SQL;
+*/
 
 class PostModel extends Database
 {

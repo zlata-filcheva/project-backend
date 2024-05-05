@@ -30,6 +30,7 @@ WHERE
     userId = ? AND postId = ?
 SQL;
 
+/*
 Remove
 
 UPDATE posts
@@ -85,6 +86,7 @@ UPDATE comments SET
 WHERE
     userId = ? AND postId = ?
 SQL;
+*/
 
 class CommentModel extends Database
 {
@@ -102,6 +104,7 @@ class CommentModel extends Database
         $this->modifyData(CREATE_COMMENT_SQL, 'ssi', $params);
     }
 
+    /*
     public function updateCommentContent($content, $userId, $postId) {
         $params = [$content, $userId, $postId];
 
@@ -131,4 +134,5 @@ class CommentModel extends Database
 
         $this->modifyData(UPDATE_COMMENT_REMOVE_DISLIKE_SQL, 'sii', $params);
     }
+    */
 }
