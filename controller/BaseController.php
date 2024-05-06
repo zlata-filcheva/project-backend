@@ -54,12 +54,25 @@ class BaseController
 
     protected function parseFormData($formData) {
         $data = [];
+        $array = [];
         $matches = [];
         preg_match_all('/name="([^"]+)"\s*\r?\n\r?\n([^\r\n]*)/', $formData, $matches);
+
+
 
         for ($i = 0; $i < count($matches[0]); $i++) {
             $name = $matches[1][$i];
             $value = $matches[2][$i];
+
+            if (str_contains($name, '[')) {
+                $name = explode("[", $name)[0];
+
+                $array[$name] = [...$array[$name] ?? [], $value];
+                $data[$name] = $array[$name];
+
+                continue;
+            }
+
             $data[$name] = trim($value);
         }
 

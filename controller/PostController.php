@@ -183,7 +183,7 @@ class PostController extends BaseController
         $parsedData = $this->parseFormData($inputData);
 
         $expectedPutKeys = ['postId', 'userId'];
-        $expectedOptionalKeys = ['content', 'tag'];
+        $expectedOptionalKeys = ['content', 'tagIds'];
         $hasOptionalKey = false;
 
         foreach ($expectedPutKeys as $value) {

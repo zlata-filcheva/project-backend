@@ -65,10 +65,6 @@ WHERE
     AND userId = ?
 SQL;
 
-/*
- * UPDATE posts
- * SET tagIds = CONCAT(tagIds, ', {"tagId": "55"}')
- */
 const UPDATE_POST_TAGS_SQL = <<<'SQL'
 UPDATE posts
 SET tagIds = ?
