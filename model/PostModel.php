@@ -87,7 +87,7 @@ class PostModel extends Database
 
         $query = !($hasUserId > 0) ? GET_POST_SQL : IS_AUTHOR_SQL;
         $types = !($hasUserId > 0) ? 'i' : 'is';
-        $params = !($hasUserId > 0) ? [$id] : [$id, $userId]; ;
+        $params = !($hasUserId > 0) ? [$id] : [$id, $userId];
 
         return $this->selectData($query, $types, $params);
     }
@@ -103,7 +103,7 @@ class PostModel extends Database
     {
         $params = [$content, $topic, $categoryId, $userId, $tagIds];
 
-        $this->modifyData(CREATE_POST_SQL, 'ssiss', $params);
+        return $this->modifyData(CREATE_POST_SQL, 'ssiss', $params);
     }
 
     public function updatePostContent($content, $topic, $id, $userId)

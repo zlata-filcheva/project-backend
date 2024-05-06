@@ -4,13 +4,13 @@ use JetBrains\PhpStorm\NoReturn;
 
 class BaseController
 {
-    const FRONT_END_URI = "https://127.0.0.1:5173, http://localhost:63342";
+    const FRONT_END_URI = "https://127.0.0.1:5173";
 
     const HEADERS_200 = [
         "Content-Type: application/json",
         "HTTP/1.1 200 OK",
         "Access-Control-Allow-Origin: *" . BaseController::FRONT_END_URI,
-        "Access-Control-Allow-Methods: GET, POST, PUT, DELETE",
+        "Access-Control-Allow-Methods: GET",
         "Access-Control-Allow-Headers: Content-Type",
         "Access-Control-Allow-Credentials: true",
         "Access-Control-Max-Age: 86400"
@@ -45,9 +45,7 @@ class BaseController
             }
         }
 
-        if (strtoupper($requestMethod) === 'GET') {
-            echo $data;
-        }
+        echo $data;
 
         exit;
     }
@@ -77,11 +75,28 @@ class BaseController
         return $data;
     }
 
+    protected function getStatusHeader201($path, $value)
+    {
+        return [
+            "Content-Type: application/json",
+            "HTTP/1.1 201 Created",
+            "Location: " . BaseController::FRONT_END_URI . "/" . $path . "/" . $value,
+            "Cache-Control: no-cache"
+        ];
+    }
+
     protected function sendStatusCode422()
     {
         $this->sendOutput(
             json_encode(self::RESPONSE_DATA_DECODED_422),
             self::HEADERS_422
         );
+    }
+
+    protected function getUri()
+    {
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        return explode( '/', $uri );
     }
 }

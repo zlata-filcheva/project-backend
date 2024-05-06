@@ -35,12 +35,14 @@ class Database
         try {
             $stmt = $this->executeStatement($query, $types, $params);
 
+            $insertId = $stmt->insert_id;
+
             $stmt->close();
+
+            return $insertId;
         } catch(Exception $e) {
             throw New Exception( $e->getMessage() );
         }
-
-        return false;
     }
 
     private function executeStatement($query = "" , $types = '', $params = [])

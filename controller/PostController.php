@@ -122,10 +122,26 @@ class PostController extends BaseController
                 $assocTagIds[] = ["tagId" => $value];
             }
 
-            $response = $model->createPost($content, $topic, $categoryId, $userId, $assocTagIds);
+            $insertId = $model->createPost($content, $topic, $categoryId, $userId, $assocTagIds);
+            $response = $model->getPost($insertId, $userId);
 
-            $responseData = json_encode($response);
-            $httpResponseHeader = self::HEADERS_200;
+            $uri = $this->getUri();
+            $outputData = $response[0];
+
+            foreach ($outputData as $key => $value) {
+                $outputData[$key] = stripslashes($value);
+            }
+
+            $tagIds = json_decode($outputData['tagIds'], true);
+
+            foreach ($tagIds as $key => $value) {
+                $tagIds[$key] = $value['tagId'];
+            }
+
+            $outputData['tagIds'] = $tagIds;
+
+            $responseData = json_encode($outputData);
+            $httpResponseHeader = $this->getStatusHeader201($uri[3], $insertId);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';

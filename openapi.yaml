@@ -63,7 +63,7 @@ paths:
         content:
           application/json:
             schema:
-              type: array
+              type: object
               required:
                 - tags
               properties:
@@ -122,8 +122,6 @@ paths:
       responses:
         '200':
           description: Successfully added missing information about user
-
-
   /posts:
     get:
       description: returns a list of posts
@@ -171,7 +169,7 @@ paths:
         content:
           application/json:
             schema:
-              type: array
+              type: object
               required:
                 - content
                 - topic
@@ -191,6 +189,32 @@ paths:
                   type: array
                   items:
                     type: number
+      responses:
+        '200':
+          description: Successfully created a new tag
+    put:
+      description: Allows to change post content or/and title
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              anyOf:
+                - content
+                - topic
+              required:
+                - postId
+                - userId
+              properties:
+                content:
+                  type: string
+                topic:
+                  type: string
+                postId:
+                  type: number
+                userId:
+                  type: string
       responses:
         '200':
           description: Successfully created a new tag
