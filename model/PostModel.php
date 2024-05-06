@@ -56,9 +56,12 @@ INSERT INTO posts (
 ) VALUES (?, ?, ?, ?, ?)
 SQL;
 
-const UPDATE_POST_CONTENT_SQL = <<<'SQL'
+const UPDATE_POST_CONTENT_START_SQL = <<<'SQL'
 UPDATE posts 
-SET content = ?, 
+SET
+SQL;
+
+const UPDATE_POST_CONTENT_END_SQL = <<<'SQL'
 updateDate = NOW() 
 WHERE 
     id = ?
@@ -77,10 +80,14 @@ class PostModel extends Database
 {
     public function getPost($id, $userId = '')
     {
-        $params = [$id];
 
-        $query = !$userId ? GET_POST_SQL : IS_AUTHOR_SQL;
-        $types = !$userId ? 'i' : 'is';
+        $trimmedUserId = trim($userId);
+        $userIdLength =  strlen($trimmedUserId);
+        $hasUserId = $userIdLength > 0;
+
+        $query = !($hasUserId > 0) ? GET_POST_SQL : IS_AUTHOR_SQL;
+        $types = !($hasUserId > 0) ? 'i' : 'is';
+        $params = !($hasUserId > 0) ? [$id] : [$id, $userId]; ;
 
         return $this->selectData($query, $types, $params);
     }
@@ -99,11 +106,41 @@ class PostModel extends Database
         $this->modifyData(CREATE_POST_SQL, 'ssiss', $params);
     }
 
-    public function updatePostContent($content, $id, $userId)
+    public function updatePostContent($content, $topic, $id, $userId)
     {
-        $params = [$content, $id, $userId];
+        $query = '';
+        $types = '';
 
-        $this->modifyData(UPDATE_POST_CONTENT_SQL, 'sis', $params);
+        $params = [];
+
+        $trimmedContent = trim($content);
+        $contentLength =  strlen($trimmedContent);
+        $hasContent = $contentLength > 0;
+
+        $trimmedTopic = trim($topic);
+        $topicLength =  strlen($trimmedTopic);
+        $hasTopic = $topicLength > 0;
+
+        $query .= UPDATE_POST_CONTENT_START_SQL;
+
+        if ($hasContent) {
+            $query .= ' content = ?, ';
+            $types .= 's';
+            $params = [...$params, $content];
+        }
+
+        if ($hasTopic) {
+            $query .= ' topic = ?, ';
+            $types .= 's';
+            $params = [...$params, $topic];
+        }
+
+        $types .= 'is';
+        $params = [...$params, $id, $userId];
+
+        $query .= UPDATE_POST_CONTENT_END_SQL;
+
+        $this->modifyData($query, $types, $params);
     }
 
     public function updatePostTags($tagIds, $id, $userId)

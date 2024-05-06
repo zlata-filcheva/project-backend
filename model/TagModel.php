@@ -51,12 +51,6 @@ class TagModel extends Database
         $query .= ') ';
         $query .= GET_SELECTED_TAGS_LIST_END_SQL;
 
-        echo $query;
-        echo "\n";
-        echo $types;
-        echo "\n";
-        print_r($ids);
-
         return $this->selectData($query, $types, $ids);
     }
 

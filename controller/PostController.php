@@ -27,7 +27,7 @@ class PostController extends BaseController
             return;
         }
 
-        if (strtoupper($requestMethod) !== 'PUT') {
+        if (strtoupper($requestMethod) === 'PUT') {
             $this->updatePost();
 
             return;
@@ -110,7 +110,7 @@ class PostController extends BaseController
             $hasCategory = $categoryController->hasCategory($categoryId);
             $hasTags = $tagController->hasTags($tagIds);
 
-            if (!$hasUser || $hasCategory || $hasTags) {
+            if (!$hasUser || !$hasCategory || !$hasTags) {
                 $this->sendStatusCode422();
 
                 return;
@@ -149,7 +149,7 @@ class PostController extends BaseController
         $parsedData = $this->parseFormData($inputData);
 
         $expectedPutKeys = ['postId', 'userId'];
-        $expectedOptionalKeys = ['content', 'tagIds'];
+        $expectedOptionalKeys = ['content', 'topic', 'tagIds'];
         $hasOptionalKey = false;
 
         foreach ($expectedPutKeys as $value) {
@@ -188,10 +188,11 @@ class PostController extends BaseController
                 return;
             }
 
-            if (isset($parsedData['content'])) {
-                $content = $parsedData['content'];
+            if (isset($parsedData['content']) || isset($parsedData['topic'])) {
+                $content = $parsedData['content'] ?? '';
+                $topic = $parsedData['topic'] ?? '';
 
-                $response = $model->updatePostContent($content, $postId, $userId);
+                $response = $model->updatePostContent($content, $topic, $postId, $userId);
             }
 
             if (isset($parsedData['tagIds'])) {
@@ -202,10 +203,7 @@ class PostController extends BaseController
                 $hasTags = $tagController->hasTags($tagIds);
 
                 if (!$hasTags) {
-                    $this->sendOutput(
-                        json_encode(self::RESPONSE_DATA_DECODED_422),
-                        self::HEADERS_422
-                    );
+                    $this->sendStatusCode422();
 
                     return;
                 }
