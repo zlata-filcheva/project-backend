@@ -1,0 +1,159 @@
+openapi: 3.0.3
+info:
+  title: New Reddit API
+  description: This API includes commands for interaction
+  version: 1.0.0
+servers:
+  - url: 'https://127.0.0.1/project-backend/index.php'
+paths:
+  /categories:
+    get:
+      description: returns a list of categories
+      responses:
+        '200':
+          description: Successfully returned a list of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+    post:
+      description: Allows to create a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - category
+              properties:
+                category:
+                  type: string
+      responses:
+        '200':
+          description: Successfully created a new category
+  /tags:
+    get:
+      description: returns a list of tags
+      responses:
+        '200':
+          description: Successfully returned a list of tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+    post:
+      description: Allows to create a new tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              required:
+                - tags
+              properties:
+                tags:
+                  type: string
+      responses:
+        '200':
+          description: Successfully created a new tag
+  /users/{userId}:
+    get:
+      description: returns information about an user by id
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  surname:
+                    type: string
+                  nickName:
+                    type: string
+    post:
+      description: Allows to add missing information about user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - name
+                - surname
+                - nickName
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                surname:
+                  type: string
+                nickName:
+                  type: string
+      responses:
+        '200':
+          description: Successfully added missing information about user
+
+
+  /posts:
+    get:
+      description: returns a list of posts
+      responses:
+        '200':
+          description: Successfully returned a list of tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+    post:
+      description: Allows to create a new tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              required:
+                - tags
+              properties:
+                tags:
+                  type: string
+      responses:
+        '200':
+          description: Successfully created a new tag

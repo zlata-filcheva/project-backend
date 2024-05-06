@@ -2,30 +2,42 @@
 
 class PostController extends BaseController
 {
-    public function hasPost($id): bool
+    public function hasPost($id, $userId): bool
     {
         $model = new PostModel();
 
-        $response = $model->getPost($id);
+        $response = $model->getPost($id, $userId);
 
         return (count($response) > 0);
     }
 
     public function get()
     {
-        $strErrorDesc = '';
-        $responseData = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'GET') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
+        if (strtoupper($requestMethod) === 'GET') {
+            $this->getPostsList();
 
             return;
         }
 
+        if (strtoupper($requestMethod) === 'POST') {
+            $this->createPost();
+
+            return;
+        }
+
+        if (strtoupper($requestMethod) !== 'PUT') {
+            $this->updatePost();
+
+            return;
+        }
+
+        $this->sendStatusCode422();
+    }
+
+    public function getPostsList()
+    {
         $arrQueryStringParams = $this->getQueryStringParams();
 
         try {
@@ -60,20 +72,10 @@ class PostController extends BaseController
         }
     }
 
-    public function create()
+    public function createPost()
     {
         $responseData = "";
         $httpResponseHeader = "";
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-
-        if (strtoupper($requestMethod) !== 'POST') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
-
-            return;
-        }
 
         $expectedPostVariables = [
             $_POST['content'],
@@ -85,10 +87,7 @@ class PostController extends BaseController
 
         foreach ($expectedPostVariables as $value) {
             if (!isset($value)) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
+                $this->sendStatusCode422();
 
                 return;
             }
@@ -108,34 +107,11 @@ class PostController extends BaseController
             $tagIds = $_POST['tagIds'];
 
             $hasUser = $userController->hasUser($userId);
-
-            if (!$hasUser) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
-
-                return;
-            }
-
             $hasCategory = $categoryController->hasCategory($categoryId);
-
-            if (!$hasCategory) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
-
-                return;
-            }
-
             $hasTags = $tagController->hasTags($tagIds);
 
-            if (!$hasTags) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
+            if (!$hasUser || $hasCategory || $hasTags) {
+                $this->sendStatusCode422();
 
                 return;
             }
@@ -163,21 +139,11 @@ class PostController extends BaseController
         }
     }
 
-    public function update()
+    public function updatePost()
     {
         $response = "";
         $responseData = "";
         $httpResponseHeader = "";
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-
-        if (strtoupper($requestMethod) !== 'PUT') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
-
-            return;
-        }
 
         $inputData = file_get_contents('php://input');
         $parsedData = $this->parseFormData($inputData);
@@ -188,10 +154,7 @@ class PostController extends BaseController
 
         foreach ($expectedPutKeys as $value) {
             if (!array_key_exists($value, $parsedData)) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
+                $this->sendStatusCode422();
 
                 return;
             }
@@ -206,10 +169,7 @@ class PostController extends BaseController
         }
 
         if (!$hasOptionalKey) {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
+            $this->sendStatusCode422();
 
             return;
         }
@@ -223,10 +183,7 @@ class PostController extends BaseController
             $isAuthor = $this->hasPost($postId, $userId);
 
             if (!$isAuthor) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
+                $this->sendStatusCode422();
 
                 return;
             }

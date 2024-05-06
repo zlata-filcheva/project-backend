@@ -17,18 +17,27 @@ class TagController extends BaseController
 
     public function get()
     {
-        $responseData = "";
-        $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'GET') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
+        if (strtoupper($requestMethod) === 'GET') {
+            $this->getTagsList();
 
             return;
         }
+
+        if (strtoupper($requestMethod) === 'POST') {
+            $this->createTag();
+
+            return;
+        }
+
+        $this->sendStatusCode422();
+    }
+
+    public function getTagsList()
+    {
+        $responseData = "";
+        $httpResponseHeader = "";
 
         try {
             $model = new TagModel();
@@ -50,17 +59,14 @@ class TagController extends BaseController
         }
     }
 
-    public function create()
+    public function createTag()
     {
         $responseData = "";
         $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'POST' && !isset($_POST["tags"])) {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
+        if (!isset($_POST["tags"])) {
+            $this->sendStatusCode422();
 
             return;
         }

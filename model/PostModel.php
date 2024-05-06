@@ -75,12 +75,12 @@ SQL;
 
 class PostModel extends Database
 {
-    public function getPost($id, $isAuthor = false)
+    public function getPost($id, $userId = '')
     {
         $params = [$id];
 
-        $query = !$isAuthor ? GET_POST_SQL : IS_AUTHOR_SQL;
-        $types = !$isAuthor ? 'i' : 'is';
+        $query = !$userId ? GET_POST_SQL : IS_AUTHOR_SQL;
+        $types = !$userId ? 'i' : 'is';
 
         return $this->selectData($query, $types, $params);
     }

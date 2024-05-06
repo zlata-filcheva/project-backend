@@ -13,15 +13,32 @@ class UserController extends BaseController
 
     public function get()
     {
-        $strErrorDesc = '';
-        $responseData = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'GET') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
+        if (strtoupper($requestMethod) === 'GET') {
+            $this->getUser();
+
+            return;
+        }
+
+        if (strtoupper($requestMethod) === 'POST') {
+            $this->createUser();
+
+            return;
+        }
+
+        $this->sendStatusCode422();
+    }
+
+    public function getUser()
+    {
+        $strErrorDesc = '';
+        $responseData = "";
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $uri = explode( '/', $uri );
+
+        if (!array_key_exists(4, $uri)) {
+            $this->sendStatusCode422();
 
             return;
         }
@@ -29,13 +46,9 @@ class UserController extends BaseController
         $arrQueryStringParams = $this->getQueryStringParams();
 
         try {
-            if (!isset($arrQueryStringParams['id']) && !$arrQueryStringParams['id']) {
-                throw new Error('No oauthId!');
-            }
-
             $model = new UserModel();
 
-            ['id' => $id] = $arrQueryStringParams;
+            $id = $uri[4];
 
             $response = $model->getUser($id);
             $user = $response[0];
@@ -54,21 +67,10 @@ class UserController extends BaseController
         }
     }
 
-    public function create()
+    public function createUser()
     {
         $responseData = "";
         $httpResponseHeader = "";
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-
-        if (strtoupper($requestMethod) !== 'POST') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
-
-            return;
-        }
-
         $expectedPostVariables = [
             $_POST['id'],
             $_POST['nickName'],
@@ -78,10 +80,7 @@ class UserController extends BaseController
 
         foreach ($expectedPostVariables as $value) {
             if (!isset($value)) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
+                $this->sendStatusCode422();
 
                 return;
             }
@@ -94,6 +93,14 @@ class UserController extends BaseController
             $nickName = $_POST['nickName'];
             $name = $_POST['name'];
             $surname = $_POST['surname'];
+
+            $hasUser = $this->hasUser($id);
+
+            if ($hasUser) {
+                $this->sendStatusCode422();
+
+                return;
+            }
 
             $response = $model->createUser($id, $nickName, $name, $surname);
 
