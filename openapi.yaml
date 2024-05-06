@@ -127,9 +127,20 @@ paths:
   /posts:
     get:
       description: returns a list of posts
+      parameters:
+        - name: rowCount
+          in: query
+          description: Amount of records in a request
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: page offset
+          schema:
+            type: integer
       responses:
         '200':
-          description: Successfully returned a list of tags
+          description: Successfully returned a list of posts
           content:
             application/json:
               schema:
@@ -139,10 +150,22 @@ paths:
                   properties:
                     id:
                       type: number
-                    name:
+                    content:
+                      type: string
+                    creationDate:
+                      type: string
+                    updateDate:
+                      type: string
+                    topic:
+                      type: string
+                    categoryId:
+                      type: number
+                    userId:
+                      type: string
+                    tagIds:
                       type: string
     post:
-      description: Allows to create a new tag
+      description: Allows to create a new post
       requestBody:
         required: true
         content:
@@ -150,10 +173,24 @@ paths:
             schema:
               type: array
               required:
-                - tags
+                - content
+                - topic
+                - categoryId
+                - userId
+                - tagIds
               properties:
-                tags:
+                content:
                   type: string
+                topic:
+                  type: string
+                categoryId:
+                  type: number
+                userId:
+                  type: string
+                tagIds:
+                  type: array
+                  items:
+                    type: number
       responses:
         '200':
           description: Successfully created a new tag
