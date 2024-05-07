@@ -246,34 +246,19 @@ paths:
                     type: array
                     items:
                       type: number
-    put:
-      description: Allows to change post title or/and content
+    patch:
+      description: Allows to update post title or/and content
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              anyOf:
-                - required:
-                  - content
-                - required:
-                  - title
-              required:
-                - postId
-                - userId
-              properties:
-                content:
-                  type: string
-                title:
-                  type: string
-                postId:
-                  type: number
-                userId:
-                  type: string
+              oneOf:
+                - $ref: '#/components/schemas/PostPatchContent'
+                - $ref: '#/components/schemas/PostPatchTags'
       responses:
-        '201':
-          description: Successfully changes post title or/and content
+        '200':
+          description: Successfully updated post title or/and content
           content:
             application/json:
               schema:
@@ -297,3 +282,38 @@ paths:
                     type: array
                     items:
                       type: number
+
+components:
+  schemas:
+    PostPatchContent:
+      type: object
+      anyOf:
+        - required:
+            - content
+        - required:
+            - title
+      required:
+        - postId
+        - userId
+      properties:
+        content:
+          type: string
+        title:
+          type: string
+        postId:
+          type: number
+        userId:
+          type: string
+    PostPatchTags:
+      type: object
+      required:
+        - postId
+        - userId
+        - tagIds
+      properties:
+        postId:
+          type: number
+        userId:
+          type: string
+        tagIds:
+          type: array
