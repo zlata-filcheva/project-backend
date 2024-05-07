@@ -33,10 +33,8 @@ class BaseController
         return $query;
     }
 
-    #[NoReturn] protected function sendOutput($data, $httpHeaders=array())
+    #[NoReturn] protected function sendOutput($data, $httpHeaders = [])
     {
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-
         header_remove('Set-Cookie');
 
         if (is_array($httpHeaders) && count($httpHeaders)) {
@@ -75,12 +73,16 @@ class BaseController
         return $data;
     }
 
-    protected function getStatusHeader201($path, $value)
+    protected function getStatusHeader201($path = '', $value = '')
     {
+        $locationHeader = strlen($path) > 0
+            ? "Location: " . BaseController::FRONT_END_URI . "/" . $path . "/" . $value
+            : '';
+
         return [
             "Content-Type: application/json",
             "HTTP/1.1 201 Created",
-            "Location: " . BaseController::FRONT_END_URI . "/" . $path . "/" . $value,
+            $locationHeader,
             "Cache-Control: no-cache"
         ];
     }

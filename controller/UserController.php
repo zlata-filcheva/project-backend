@@ -94,6 +94,8 @@ class UserController extends BaseController
             $name = $_POST['name'];
             $surname = $_POST['surname'];
 
+            $uri = $this->getUri();
+
             $hasUser = $this->hasUser($id);
 
             if ($hasUser) {
@@ -102,10 +104,11 @@ class UserController extends BaseController
                 return;
             }
 
-            $response = $model->createUser($id, $nickName, $name, $surname);
+            $model->createUser($id, $nickName, $name, $surname);
+            $response = $model->getUser($id);
 
-            $responseData = json_encode($response);
-            $httpResponseHeader = self::HEADERS_200;
+            $responseData = json_encode($response[0]);
+            $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';

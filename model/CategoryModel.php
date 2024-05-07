@@ -37,6 +37,6 @@ class CategoryModel extends Database
 
     public function createCategory($category = '')
     {
-        $this->modifyData(CREATE_CATEGORY_SQL, 's', [$category]);
+        return $this->modifyData(CREATE_CATEGORY_SQL, 's', [$category]);
     }
 }

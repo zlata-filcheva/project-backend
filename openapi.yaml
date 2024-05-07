@@ -37,8 +37,17 @@ paths:
                 category:
                   type: string
       responses:
-        '200':
+        '201':
           description: Successfully created a new category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  name:
+                    type: string
   /tags:
     get:
       description: returns a list of tags
@@ -64,14 +73,25 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - tags
               properties:
                 tags:
-                  type: string
+                  type: array
+                  items:
+                    type: string
       responses:
-        '200':
+        '201':
           description: Successfully created a new tag
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
   /users/{userId}:
     get:
       description: returns information about an user by id
@@ -120,8 +140,17 @@ paths:
                 nickName:
                   type: string
       responses:
-        '200':
+        '201':
           description: Successfully added missing information about user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  name:
+                    type: string
   /posts:
     get:
       description: returns a list of posts
@@ -190,8 +219,31 @@ paths:
                   items:
                     type: number
       responses:
-        '200':
-          description: Successfully created a new tag
+        '201':
+          description: Successfully created a new post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  content:
+                    type: string
+                  creationDate:
+                    type: string
+                  updateDate:
+                    type: string
+                  topic:
+                    type: string
+                  categoryId:
+                    type: number
+                  userId:
+                    type: string
+                  tagIds:
+                    type: array
+                    items:
+                      type: number
     put:
       description: Allows to change post content or/and title
       requestBody:

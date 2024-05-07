@@ -24,13 +24,15 @@ class UserModel extends Database
 {
     public function getUser($id)
     {
-        return $this->selectData(GET_USER_SQL, 's', [$id]);
+        $params = [$id];
+
+        return $this->selectData(GET_USER_SQL, 's', $params);
     }
 
     public function createUser($id, $nickName, $name, $surname)
     {
         $params = [$id, $nickName, $name, $surname];
 
-        $this->modifyData(CREATE_USER_SQL, 'ssss', $params);
+        return $this->modifyData(CREATE_USER_SQL, 'ssss', $params);
     }
 }

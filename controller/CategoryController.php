@@ -56,9 +56,6 @@ class CategoryController extends BaseController
 
     public function createCategory()
     {
-        $responseData = "";
-        $httpResponseHeader = "";
-
         if (!isset($_POST["category"])) {
             $this->sendStatusCode422();
 
@@ -70,10 +67,14 @@ class CategoryController extends BaseController
 
             $category = $_POST["category"];
 
-            $response = $model->createCategory($category);
+            $uri = $this->getUri();
 
-            $responseData = json_encode($response);
-            $httpResponseHeader = self::HEADERS_200;
+            $output = $model->createCategory($category);
+            $insertId = $output['insert_id'];
+            $response = $model->getCategory($insertId);
+
+            $responseData = json_encode($response[0]);
+            $httpResponseHeader = $this->getStatusHeader201($uri[3], $insertId);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';

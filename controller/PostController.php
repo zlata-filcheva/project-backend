@@ -106,6 +106,8 @@ class PostController extends BaseController
             $userId = $_POST['userId'];
             $tagIds = $_POST['tagIds'];
 
+            $uri = $this->getUri();
+
             $hasUser = $userController->hasUser($userId);
             $hasCategory = $categoryController->hasCategory($categoryId);
             $hasTags = $tagController->hasTags($tagIds);
@@ -122,10 +124,11 @@ class PostController extends BaseController
                 $assocTagIds[] = ["tagId" => $value];
             }
 
-            $insertId = $model->createPost($content, $topic, $categoryId, $userId, $assocTagIds);
-            $response = $model->getPost($insertId, $userId);
+            $output = $model->createPost($content, $topic, $categoryId, $userId, $assocTagIds);
+            $insertId = $output['insert_id'];
 
-            $uri = $this->getUri();
+            $response = $model->getPost($insertId);
+
             $outputData = $response[0];
 
             foreach ($outputData as $key => $value) {
