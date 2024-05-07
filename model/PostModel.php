@@ -144,8 +144,9 @@ class PostModel extends Database
 
     public function updatePostTags($tagIds, $id, $userId)
     {
+        $types = 'sis';
         $params = [$tagIds, $id, $userId];
 
-        return $this->modifyData(UPDATE_POST_TAGS_SQL, 'sis', $params);
+        return $this->modifyData(UPDATE_POST_TAGS_SQL, $types, $params);
     }
 }
