@@ -183,14 +183,16 @@ paths:
                       type: string
                     updateDate:
                       type: string
-                    topic:
+                    title:
                       type: string
                     categoryId:
                       type: number
                     userId:
                       type: string
                     tagIds:
-                      type: string
+                      type: array
+                      items:
+                        type: number
     post:
       description: Allows to create a new post
       requestBody:
@@ -201,14 +203,14 @@ paths:
               type: object
               required:
                 - content
-                - topic
+                - title
                 - categoryId
                 - userId
                 - tagIds
               properties:
                 content:
                   type: string
-                topic:
+                title:
                   type: string
                 categoryId:
                   type: number
@@ -234,7 +236,7 @@ paths:
                     type: string
                   updateDate:
                     type: string
-                  topic:
+                  title:
                     type: string
                   categoryId:
                     type: number
@@ -245,7 +247,7 @@ paths:
                     items:
                       type: number
     put:
-      description: Allows to change post content or/and title
+      description: Allows to change post title or/and content
       requestBody:
         required: true
         content:
@@ -253,20 +255,45 @@ paths:
             schema:
               type: object
               anyOf:
-                - content
-                - topic
+                - required:
+                  - content
+                - required:
+                  - title
               required:
                 - postId
                 - userId
               properties:
                 content:
                   type: string
-                topic:
+                title:
                   type: string
                 postId:
                   type: number
                 userId:
                   type: string
       responses:
-        '200':
-          description: Successfully created a new tag
+        '201':
+          description: Successfully changes post title or/and content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  content:
+                    type: string
+                  creationDate:
+                    type: string
+                  updateDate:
+                    type: string
+                  title:
+                    type: string
+                  categoryId:
+                    type: number
+                  userId:
+                    type: string
+                  tagIds:
+                    type: array
+                    items:
+                      type: number

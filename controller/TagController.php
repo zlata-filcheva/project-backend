@@ -36,9 +36,6 @@ class TagController extends BaseController
 
     public function getTagsList()
     {
-        $responseData = "";
-        $httpResponseHeader = "";
-
         try {
             $model = new TagModel();
 

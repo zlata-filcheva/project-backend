@@ -7,7 +7,7 @@ SELECT
     content, 
     creationDate,
     updateDate,
-    topic,
+    title,
     categoryId,
     userId,
     tagIds
@@ -23,7 +23,7 @@ SELECT
     content, 
     creationDate,
     updateDate,
-    topic,
+    title,
     categoryId,
     userId,
     tagIds
@@ -37,7 +37,7 @@ SELECT
     content, 
     creationDate,
     updateDate,
-    topic,
+    title,
     categoryId,
     userId,
     tagIds
@@ -49,7 +49,7 @@ SQL;
 const CREATE_POST_SQL = <<<'SQL'
 INSERT INTO posts (
     content, 
-    topic,
+    title,
     categoryId,
     userId,
     tagIds
@@ -80,7 +80,6 @@ class PostModel extends Database
 {
     public function getPost($id, $userId = '')
     {
-
         $trimmedUserId = trim($userId);
         $userIdLength =  strlen($trimmedUserId);
         $hasUserId = $userIdLength > 0;
@@ -99,14 +98,14 @@ class PostModel extends Database
         return $this->selectData(GET_POSTS_LIST_SQL, 'ii', $params);
     }
 
-    public function createPost($content, $topic, $categoryId, $userId, $tagIds)
+    public function createPost($content, $title, $categoryId, $userId, $tagIds)
     {
-        $params = [$content, $topic, $categoryId, $userId, $tagIds];
+        $params = [$content, $title, $categoryId, $userId, $tagIds];
 
         return $this->modifyData(CREATE_POST_SQL, 'ssiss', $params);
     }
 
-    public function updatePostContent($content, $topic, $id, $userId)
+    public function updatePostContent($content, $title, $id, $userId)
     {
         $query = '';
         $types = '';
@@ -117,9 +116,9 @@ class PostModel extends Database
         $contentLength =  strlen($trimmedContent);
         $hasContent = $contentLength > 0;
 
-        $trimmedTopic = trim($topic);
-        $topicLength =  strlen($trimmedTopic);
-        $hasTopic = $topicLength > 0;
+        $trimmedTitle = trim($title);
+        $titleLength =  strlen($trimmedTitle);
+        $hasTitle = $titleLength > 0;
 
         $query .= UPDATE_POST_CONTENT_START_SQL;
 
@@ -129,10 +128,10 @@ class PostModel extends Database
             $params = [...$params, $content];
         }
 
-        if ($hasTopic) {
-            $query .= ' topic = ?, ';
+        if ($hasTitle) {
+            $query .= ' title = ?, ';
             $types .= 's';
-            $params = [...$params, $topic];
+            $params = [...$params, $title];
         }
 
         $types .= 'is';
@@ -140,13 +139,13 @@ class PostModel extends Database
 
         $query .= UPDATE_POST_CONTENT_END_SQL;
 
-        $this->modifyData($query, $types, $params);
+        return $this->modifyData($query, $types, $params);
     }
 
     public function updatePostTags($tagIds, $id, $userId)
     {
         $params = [$tagIds, $id, $userId];
 
-        $this->modifyData(UPDATE_POST_TAGS_SQL, 'sis', $params);
+        return $this->modifyData(UPDATE_POST_TAGS_SQL, 'sis', $params);
     }
 }

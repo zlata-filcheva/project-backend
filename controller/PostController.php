@@ -2,6 +2,31 @@
 
 class PostController extends BaseController
 {
+    public function restoreInitialData($initialData) {
+        $outputData = [];
+
+        foreach ($initialData as $key => $object) {
+            $newObject = [];
+            $newTagIds = [];
+
+            foreach ($object as $objectKey => $value) {
+                $newObject[$objectKey] = stripslashes($value);
+            }
+
+            $tagIds = json_decode($newObject['tagIds'], true);
+
+            foreach ($tagIds as $tagKey => $value) {
+                $newTagIds[$tagKey] = $value['tagId'];
+            }
+
+            $newObject['tagIds'] = $tagIds;
+
+            $outputData[$key] = $newObject;
+        }
+
+        return $outputData;
+    }
+
     public function hasPost($id, $userId): bool
     {
         $model = new PostModel();
@@ -27,7 +52,7 @@ class PostController extends BaseController
             return;
         }
 
-        if (strtoupper($requestMethod) === 'PUT') {
+        if (strtoupper($requestMethod) === 'PATCH') {
             $this->updatePost();
 
             return;
@@ -58,6 +83,24 @@ class PostController extends BaseController
 
             $response = $model->getPostsList($rowCount, $offset);
 
+            foreach ($response as $key => &$object) {
+                foreach ($object as $objectKey => &$value) {
+                    $object[$objectKey] = stripslashes($value);
+                }
+
+                unset($value);
+
+                $tagIds = json_decode($object['tagIds'], true);
+
+                foreach ($tagIds as $tagKey => $value) {
+                    $tagIds[$tagKey] = $value['tagId'];
+                }
+
+                $object['tagIds'] = $tagIds;
+            }
+
+            unset($object);
+
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
         }
@@ -79,7 +122,7 @@ class PostController extends BaseController
 
         $expectedPostVariables = [
             $_POST['content'],
-            $_POST['topic'],
+            $_POST['title'],
             $_POST['categoryId'],
             $_POST['userId'],
             $_POST['tagIds']
@@ -101,7 +144,7 @@ class PostController extends BaseController
             $tagController = new TagController();
 
             $content = $_POST['content'];
-            $topic = $_POST['topic'];
+            $title = $_POST['title'];
             $categoryId = $_POST['categoryId'];
             $userId = $_POST['userId'];
             $tagIds = $_POST['tagIds'];
@@ -124,7 +167,7 @@ class PostController extends BaseController
                 $assocTagIds[] = ["tagId" => $value];
             }
 
-            $output = $model->createPost($content, $topic, $categoryId, $userId, $assocTagIds);
+            $output = $model->createPost($content, $title, $categoryId, $userId, $assocTagIds);
             $insertId = $output['insert_id'];
 
             $response = $model->getPost($insertId);
@@ -160,7 +203,6 @@ class PostController extends BaseController
 
     public function updatePost()
     {
-        $response = "";
         $responseData = "";
         $httpResponseHeader = "";
 
@@ -168,7 +210,7 @@ class PostController extends BaseController
         $parsedData = $this->parseFormData($inputData);
 
         $expectedPutKeys = ['postId', 'userId'];
-        $expectedOptionalKeys = ['content', 'topic', 'tagIds'];
+        $expectedOptionalKeys = ['content', 'title', 'tagIds'];
         $hasOptionalKey = false;
 
         foreach ($expectedPutKeys as $value) {
@@ -207,11 +249,11 @@ class PostController extends BaseController
                 return;
             }
 
-            if (isset($parsedData['content']) || isset($parsedData['topic'])) {
+            if (isset($parsedData['content']) || isset($parsedData['title'])) {
                 $content = $parsedData['content'] ?? '';
-                $topic = $parsedData['topic'] ?? '';
+                $title = $parsedData['title'] ?? '';
 
-                $response = $model->updatePostContent($content, $topic, $postId, $userId);
+                $model->updatePostContent($content, $title, $postId, $userId);
             }
 
             if (isset($parsedData['tagIds'])) {
@@ -233,10 +275,11 @@ class PostController extends BaseController
                     $assocTagIds[] = ["tagId" => $value];
                 }
 
-                $response = $model->updatePostTags($assocTagIds, $postId, $userId);
+                $model->updatePostTags($assocTagIds, $postId, $userId);
             }
 
-            $responseData = json_encode($response);
+            $postData = $model->getPost($postId);
+            $responseData = json_encode($postData[0]);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
