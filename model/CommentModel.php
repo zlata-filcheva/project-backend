@@ -6,9 +6,10 @@ SELECT
     id, 
     userId, 
     content,
-    likes,
-    dislikes,
-    postId
+    likedBy,
+    dislikedBy,
+    postId,
+    parentId
 FROM comments 
 WHERE postId = ?
 LIMIT ? OFFSET ?
@@ -23,17 +24,45 @@ INSERT INTO comments (
 SQL;
 
 const UPDATE_COMMENT_CONTENT_SQL = <<<'SQL'
-UPDATE comments SET
-                    content = ?
+UPDATE comments 
+SET content = ?
 WHERE
     userId = ? AND postId = ?
 SQL;
 
+/*
+Remove
+
+UPDATE posts
+    SET tagIds = JSON_REMOVE(
+    tagIds, JSON_UNQUOTE(
+        REPLACE(
+            JSON_SEARCH( tagIds, 'one', '27', null, '$**.tagId' )
+            , '.tagId'
+            , ''
+        )
+    )
+) WHERE id = 3
+and JSON_SEARCH( tagIds, 'one', '27', null, '$**.tagId' ) IS NOT NULL ;
+
+
+[{"tagId":"27"},{"tagId":"28"}]
+
+
+Add
+
+
+
+
+UPDATE posts
+SET tagIds = CONCAT(tagIds, ', {"tagId": "55"}')
+
+WHERE id = 3 AND tagIds IS NOT NULL;
+
 const UPDATE_COMMENT_ADD_LIKE_SQL = <<<'SQL'
-UPDATE comments SET
-                    likes = likes + 1 
-WHERE
-    userId = ? AND postId = ?
+UPDATE comments
+SET likedBy = JSON_REMOVE(likedBy, JSON_UNQUOTE(JSON_SEARCH(likedBy, 'one', '{"likedBy": 26}')))
+WHERE JSON_CONTAINS(likedBy, '{"likedBy": 26}');
 SQL;
 
 const UPDATE_COMMENT_REMOVE_LIKE_SQL = <<<'SQL'
@@ -56,6 +85,7 @@ UPDATE comments SET
 WHERE
     userId = ? AND postId = ?
 SQL;
+*/
 
 class CommentModel extends Database
 {
@@ -73,6 +103,7 @@ class CommentModel extends Database
         $this->modifyData(CREATE_COMMENT_SQL, 'ssi', $params);
     }
 
+    /*
     public function updateCommentContent($content, $userId, $postId) {
         $params = [$content, $userId, $postId];
 
@@ -102,4 +133,5 @@ class CommentModel extends Database
 
         $this->modifyData(UPDATE_COMMENT_REMOVE_DISLIKE_SQL, 'sii', $params);
     }
+    */
 }

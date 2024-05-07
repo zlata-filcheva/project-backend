@@ -9,7 +9,7 @@ class BaseController
     const HEADERS_200 = [
         "Content-Type: application/json",
         "HTTP/1.1 200 OK",
-        "Access-Control-Allow-Origin: " . BaseController::FRONT_END_URI,
+        "Access-Control-Allow-Origin: *" . BaseController::FRONT_END_URI,
         "Access-Control-Allow-Methods: GET",
         "Access-Control-Allow-Headers: Content-Type",
         "Access-Control-Allow-Credentials: true",
@@ -33,10 +33,8 @@ class BaseController
         return $query;
     }
 
-    #[NoReturn] protected function sendOutput($data, $httpHeaders=array())
+    #[NoReturn] protected function sendOutput($data, $httpHeaders = [])
     {
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-
         header_remove('Set-Cookie');
 
         if (is_array($httpHeaders) && count($httpHeaders)) {
@@ -45,10 +43,62 @@ class BaseController
             }
         }
 
-        if (strtoupper($requestMethod) === 'GET') {
-            echo $data;
-        }
+        echo $data;
 
         exit;
+    }
+
+    protected function parseFormData($formData) {
+        $data = [];
+        $array = [];
+        $matches = [];
+        preg_match_all('/name="([^"]+)"\s*\r?\n\r?\n([^\r\n]*)/', $formData, $matches);
+
+        for ($i = 0; $i < count($matches[0]); $i++) {
+            $name = $matches[1][$i];
+            $value = $matches[2][$i];
+
+            if (str_contains($name, '[')) {
+                $name = explode("[", $name)[0];
+
+                $array[$name] = [...$array[$name] ?? [], $value];
+                $data[$name] = $array[$name];
+
+                continue;
+            }
+
+            $data[$name] = trim($value);
+        }
+
+        return $data;
+    }
+
+    protected function getStatusHeader201($path = '', $value = '')
+    {
+        $locationHeader = strlen($path) > 0
+            ? "Location: " . BaseController::FRONT_END_URI . "/" . $path . "/" . $value
+            : '';
+
+        return [
+            "Content-Type: application/json",
+            "HTTP/1.1 201 Created",
+            $locationHeader,
+            "Cache-Control: no-cache"
+        ];
+    }
+
+    protected function sendStatusCode422()
+    {
+        $this->sendOutput(
+            json_encode(self::RESPONSE_DATA_DECODED_422),
+            self::HEADERS_422
+        );
+    }
+
+    protected function getUri()
+    {
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        return explode( '/', $uri );
     }
 }

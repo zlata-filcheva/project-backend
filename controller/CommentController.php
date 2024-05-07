@@ -1,5 +1,6 @@
 <?php
 
+//TODO: requires changes
 class CommentController extends BaseController
 {
     public function get()
@@ -136,85 +137,4 @@ class CommentController extends BaseController
             $this->sendOutput($responseData, $httpResponseHeader);
         }
     }
-
-    /*
-     * Very big logic
-     */
-    /*
-    public function update()
-    {
-        $responseData = "";
-        $httpResponseHeader = "";
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-
-        if (strtoupper($requestMethod) !== 'POST') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
-
-            return;
-        }
-
-        $obligatoryPostVariables = [
-            $_POST['userId'],
-            $_POST['postId']
-        ];
-
-        $expectedPostVariables = [
-            $_POST['content'],
-            $_POST['likes'],
-            $_POST['dislikes']
-        ];
-
-        foreach ($obligatoryPostVariables as $value) {
-            if (!isset($value)) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
-
-                return;
-            }
-        }
-
-        $hasExpectedPostVariable = false;
-
-        foreach ($expectedPostVariables as $value) {
-            if (isset($value)) {
-                $hasExpectedPostVariable = true;
-
-                break;
-            }
-        }
-
-        if (!isset($hasExpectedPostVariable)) {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
-
-            return;
-        }
-
-        try {
-            $model = new CommentsModel();
-
-            $response = $model->createComment($userId, $content, $postId);
-
-            $responseData = json_encode($response);
-            $httpResponseHeader = self::HEADERS_200;
-        }
-        catch (Error $e) {
-            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
-
-            $responseData = json_encode(['error' => $strErrorDesc]);
-            $httpResponseHeader = self::HEADERS_500;
-
-        }
-        finally {
-            $this->sendOutput($responseData, $httpResponseHeader);
-        }
-    }
-    */
 }

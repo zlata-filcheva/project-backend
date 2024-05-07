@@ -2,30 +2,67 @@
 
 class PostController extends BaseController
 {
-    public function hasPost($id): bool
+    public function restoreInitialData($initialData) {
+        $outputData = [];
+
+        foreach ($initialData as $key => $object) {
+            $newObject = [];
+            $newTagIds = [];
+
+            foreach ($object as $objectKey => $value) {
+                $newObject[$objectKey] = stripslashes($value);
+            }
+
+            $tagIds = json_decode($newObject['tagIds'], true);
+
+            foreach ($tagIds as $value) {
+                $newTagIds = [...$newTagIds, $value['tagId']];
+            }
+
+            $newObject['tagIds'] = $newTagIds;
+
+            $outputData[$key] = $newObject;
+        }
+
+        return $outputData;
+    }
+
+    public function hasPost($id, $userId): bool
     {
         $model = new PostModel();
 
-        $response = $model->getPost($id);
+        $response = $model->getPost($id, $userId);
 
         return (count($response) > 0);
     }
 
     public function get()
     {
-        $strErrorDesc = '';
-        $responseData = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'GET') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
+        if (strtoupper($requestMethod) === 'GET') {
+            $this->getPostsList();
 
             return;
         }
 
+        if (strtoupper($requestMethod) === 'POST') {
+            $this->createPost();
+
+            return;
+        }
+
+        if (strtoupper($requestMethod) === 'PATCH') {
+            $this->updatePost();
+
+            return;
+        }
+
+        $this->sendStatusCode422();
+    }
+
+    public function getPostsList()
+    {
         $arrQueryStringParams = $this->getQueryStringParams();
 
         try {
@@ -46,7 +83,9 @@ class PostController extends BaseController
 
             $response = $model->getPostsList($rowCount, $offset);
 
-            $responseData = json_encode($response);
+            $normalizedData = $this->restoreInitialData($response);
+
+            $responseData = json_encode($normalizedData);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -60,24 +99,14 @@ class PostController extends BaseController
         }
     }
 
-    public function create()
+    public function createPost()
     {
         $responseData = "";
         $httpResponseHeader = "";
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-
-        if (strtoupper($requestMethod) !== 'POST') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
-
-            return;
-        }
 
         $expectedPostVariables = [
             $_POST['content'],
-            $_POST['topic'],
+            $_POST['title'],
             $_POST['categoryId'],
             $_POST['userId'],
             $_POST['tagIds']
@@ -85,10 +114,7 @@ class PostController extends BaseController
 
         foreach ($expectedPostVariables as $value) {
             if (!isset($value)) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
+                $this->sendStatusCode422();
 
                 return;
             }
@@ -102,53 +128,133 @@ class PostController extends BaseController
             $tagController = new TagController();
 
             $content = $_POST['content'];
-            $topic = $_POST['topic'];
+            $title = $_POST['title'];
             $categoryId = $_POST['categoryId'];
             $userId = $_POST['userId'];
             $tagIds = $_POST['tagIds'];
 
+            $uri = $this->getUri();
+
             $hasUser = $userController->hasUser($userId);
-
-            if (!$hasUser) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
-
-                return;
-            }
-
             $hasCategory = $categoryController->hasCategory($categoryId);
-
-            if (!$hasCategory) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
-
-                return;
-            }
-
             $hasTags = $tagController->hasTags($tagIds);
 
-            if (!$hasTags) {
-                $this->sendOutput(
-                    json_encode(self::RESPONSE_DATA_DECODED_422),
-                    self::HEADERS_422
-                );
+            if (!$hasUser || !$hasCategory || !$hasTags) {
+                $this->sendStatusCode422();
 
                 return;
             }
 
-            $assoc_array = array();
+            $assocTagIds = [];
 
             foreach ($tagIds as $value) {
-                $assoc_array[] = array("tagId" => $value);
+                $assocTagIds[] = ["tagId" => $value];
             }
 
-            $response = $model->createPost($content, $topic, $categoryId, $userId, $assoc_array);
+            $output = $model->createPost($content, $title, $categoryId, $userId, $assocTagIds);
+            $insertId = $output['insert_id'];
 
-            $responseData = json_encode($response);
+            $response = $model->getPost($insertId);
+
+            $normalizedData = $this->restoreInitialData($response);
+
+            $responseData = json_encode($normalizedData[0]);
+            $httpResponseHeader = $this->getStatusHeader201($uri[3], $insertId);
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
+        }
+    }
+
+    public function updatePost()
+    {
+        $responseData = "";
+        $httpResponseHeader = "";
+
+        $inputData = file_get_contents('php://input');
+        $parsedData = $this->parseFormData($inputData);
+
+        $expectedPutKeys = ['postId', 'userId'];
+        $expectedOptionalKeys = ['content', 'title', 'tagIds'];
+        $hasOptionalKey = false;
+
+        foreach ($expectedPutKeys as $value) {
+            if (!array_key_exists($value, $parsedData)) {
+                $this->sendStatusCode422();
+
+                return;
+            }
+        }
+
+        foreach ($expectedOptionalKeys as $value) {
+            if (array_key_exists($value, $parsedData)) {
+                $hasOptionalKey = true;
+
+                break;
+            }
+        }
+
+        if (!$hasOptionalKey) {
+            $this->sendStatusCode422();
+
+            return;
+        }
+
+        try {
+            $model = new PostModel();
+
+            $postId = $parsedData['postId'];
+            $userId = $parsedData['userId'];
+
+            $isAuthor = $this->hasPost($postId, $userId);
+
+            if (!$isAuthor) {
+                $this->sendStatusCode422();
+
+                return;
+            }
+
+            if (isset($parsedData['content']) || isset($parsedData['title'])) {
+                $content = $parsedData['content'] ?? '';
+                $title = $parsedData['title'] ?? '';
+
+                $model->updatePostContent($content, $title, $postId, $userId);
+            }
+
+            if (isset($parsedData['tagIds'])) {
+                $tagIds = $parsedData['tagIds'];
+
+                $tagController = new TagController();
+
+                $hasTags = $tagController->hasTags($tagIds);
+
+                if (!$hasTags) {
+                    $this->sendStatusCode422();
+
+                    return;
+                }
+
+                $assocTagIds = [];
+
+                foreach ($tagIds as $value) {
+                    $assocTagIds[] = ["tagId" => $value];
+                }
+
+                $model->updatePostTags($assocTagIds, $postId, $userId);
+            }
+
+            $postData = $model->getPost($postId);
+
+            $normalizedData = $this->restoreInitialData($postData);
+
+            $responseData = json_encode($normalizedData[0]);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {

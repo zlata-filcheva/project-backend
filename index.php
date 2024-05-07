@@ -1,12 +1,12 @@
 <?php
 require __DIR__ . "/inc/bootstrap.php";
 
-const ALLOWED_URI = ["category", "comment", "post", "tag", "user"];
+const ALLOWED_URI = ["categories", "comments", "posts", "tags", "users"];
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode( '/', $uri );
 
-if (!isset($uri[3]) || !in_array($uri[3], ALLOWED_URI) || !isset($uri[4])) {
+if (!isset($uri[3]) || !in_array($uri[3], ALLOWED_URI)) {
     header("HTTP/1.1 404 Not Found");
 
     exit();
@@ -24,24 +24,24 @@ $postController = new PostController();
 $tagController = new TagController();
 $userController = new UserController();
 
-$strMethodName = $uri[4];
+$strMethodName = array_key_exists(4, $uri) ? $uri[4] : 'get';
 
-if ($uri[3] === "category") {
-    $categoryController->{$strMethodName}();
+if ($uri[3] === "categories") {
+    $categoryController->get();
 }
 
-if ($uri[3] === "comment") {
+if ($uri[3] === "comments") {
     $commentController->{$strMethodName}();
 }
 
-if ($uri[3] === "post") {
+if ($uri[3] === "posts") {
     $postController->{$strMethodName}();
 }
 
-if ($uri[3] === "tag") {
-    $tagController->{$strMethodName}();
+if ($uri[3] === "tags") {
+    $tagController->get();
 }
 
-if ($uri[3] === "user") {
-    $userController->{$strMethodName}();
+if ($uri[3] === "users") {
+    $userController->get();
 }

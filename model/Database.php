@@ -33,14 +33,18 @@ class Database
     protected function modifyData($query = "", $types, $params = [])
     {
         try {
+            $output = [];
             $stmt = $this->executeStatement($query, $types, $params);
 
+            $output['insert_id'] = $stmt->insert_id;
+            $output['affected_rows'] = $stmt->affected_rows;
+
             $stmt->close();
+
+            return $output;
         } catch(Exception $e) {
             throw New Exception( $e->getMessage() );
         }
-
-        return false;
     }
 
     private function executeStatement($query = "" , $types = '', $params = [])

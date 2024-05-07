@@ -1,0 +1,319 @@
+openapi: 3.0.3
+info:
+  title: New Reddit API
+  description: This API includes commands for interaction
+  version: 1.0.0
+servers:
+  - url: 'https://127.0.0.1/project-backend/index.php'
+paths:
+  /categories:
+    get:
+      description: returns a list of categories
+      responses:
+        '200':
+          description: Successfully returned a list of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+    post:
+      description: Allows to create a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - category
+              properties:
+                category:
+                  type: string
+      responses:
+        '201':
+          description: Successfully created a new category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  name:
+                    type: string
+  /tags:
+    get:
+      description: returns a list of tags
+      responses:
+        '200':
+          description: Successfully returned a list of tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+    post:
+      description: Allows to create a new tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Successfully created a new tag
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+  /users/{userId}:
+    get:
+      description: returns information about an user by id
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned user data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  surname:
+                    type: string
+                  nickName:
+                    type: string
+    post:
+      description: Allows to add missing information about user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - name
+                - surname
+                - nickName
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                surname:
+                  type: string
+                nickName:
+                  type: string
+      responses:
+        '201':
+          description: Successfully added missing information about user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  name:
+                    type: string
+  /posts:
+    get:
+      description: returns a list of posts
+      parameters:
+        - name: rowCount
+          in: query
+          description: Amount of records in a request
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: page offset
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned a list of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    content:
+                      type: string
+                    creationDate:
+                      type: string
+                    updateDate:
+                      type: string
+                    title:
+                      type: string
+                    categoryId:
+                      type: number
+                    userId:
+                      type: string
+                    tagIds:
+                      type: array
+                      items:
+                        type: number
+    post:
+      description: Allows to create a new post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+                - title
+                - categoryId
+                - userId
+                - tagIds
+              properties:
+                content:
+                  type: string
+                title:
+                  type: string
+                categoryId:
+                  type: number
+                userId:
+                  type: string
+                tagIds:
+                  type: array
+                  items:
+                    type: number
+      responses:
+        '201':
+          description: Successfully created a new post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  content:
+                    type: string
+                  creationDate:
+                    type: string
+                  updateDate:
+                    type: string
+                  title:
+                    type: string
+                  categoryId:
+                    type: number
+                  userId:
+                    type: string
+                  tagIds:
+                    type: array
+                    items:
+                      type: number
+    patch:
+      description: Allows to update post title or/and content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/PostPatchContent'
+                - $ref: '#/components/schemas/PostPatchTags'
+      responses:
+        '200':
+          description: Successfully updated post title or/and content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  content:
+                    type: string
+                  creationDate:
+                    type: string
+                  updateDate:
+                    type: string
+                  title:
+                    type: string
+                  categoryId:
+                    type: number
+                  userId:
+                    type: string
+                  tagIds:
+                    type: array
+                    items:
+                      type: number
+
+components:
+  schemas:
+    PostPatchContent:
+      type: object
+      anyOf:
+        - required:
+            - content
+        - required:
+            - title
+      required:
+        - postId
+        - userId
+      properties:
+        content:
+          type: string
+        title:
+          type: string
+        postId:
+          type: number
+        userId:
+          type: string
+    PostPatchTags:
+      type: object
+      required:
+        - postId
+        - userId
+        - tagIds
+      properties:
+        postId:
+          type: number
+        userId:
+          type: string
+        tagIds:
+          type: array

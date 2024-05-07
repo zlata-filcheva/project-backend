@@ -13,18 +13,27 @@ class CategoryController extends BaseController
 
     public function get()
     {
-        $responseData = "";
-        $httpResponseHeader = "";
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-        if (strtoupper($requestMethod) !== 'GET') {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
+        if (strtoupper($requestMethod) === 'GET') {
+            $this->getCategoriesList();
 
             return;
         }
+
+        if (strtoupper($requestMethod) === 'POST') {
+            $this->createCategory();
+
+            return;
+        }
+
+        $this->sendStatusCode422();
+    }
+
+    public function getCategoriesList()
+    {
+        $responseData = "";
+        $httpResponseHeader = "";
 
         try {
             $model = new CategoryModel();
@@ -39,24 +48,16 @@ class CategoryController extends BaseController
 
             $responseData = json_encode(['error' => $strErrorDesc]);
             $httpResponseHeader = self::HEADERS_500;
-
         }
         finally {
             $this->sendOutput($responseData, $httpResponseHeader);
         }
     }
 
-    public function create()
+    public function createCategory()
     {
-        $responseData = "";
-        $httpResponseHeader = "";
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-
-        if (strtoupper($requestMethod) !== 'POST' && !isset($_POST["category"])) {
-            $this->sendOutput(
-                json_encode(self::RESPONSE_DATA_DECODED_422),
-                self::HEADERS_422
-            );
+        if (!isset($_POST["category"])) {
+            $this->sendStatusCode422();
 
             return;
         }
@@ -66,10 +67,14 @@ class CategoryController extends BaseController
 
             $category = $_POST["category"];
 
-            $response = $model->createCategory($category);
+            $uri = $this->getUri();
 
-            $responseData = json_encode($response);
-            $httpResponseHeader = self::HEADERS_200;
+            $output = $model->createCategory($category);
+            $insertId = $output['insert_id'];
+            $response = $model->getCategory($insertId);
+
+            $responseData = json_encode($response[0]);
+            $httpResponseHeader = $this->getStatusHeader201($uri[3], $insertId);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
