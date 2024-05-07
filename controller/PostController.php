@@ -15,11 +15,11 @@ class PostController extends BaseController
 
             $tagIds = json_decode($newObject['tagIds'], true);
 
-            foreach ($tagIds as $tagKey => $value) {
-                $newTagIds[$tagKey] = $value['tagId'];
+            foreach ($tagIds as $value) {
+                $newTagIds = [...$newTagIds, $value['tagId']];
             }
 
-            $newObject['tagIds'] = $tagIds;
+            $newObject['tagIds'] = $newTagIds;
 
             $outputData[$key] = $newObject;
         }
@@ -83,25 +83,9 @@ class PostController extends BaseController
 
             $response = $model->getPostsList($rowCount, $offset);
 
-            foreach ($response as $key => &$object) {
-                foreach ($object as $objectKey => &$value) {
-                    $object[$objectKey] = stripslashes($value);
-                }
+            $normalizedData = $this->restoreInitialData($response);
 
-                unset($value);
-
-                $tagIds = json_decode($object['tagIds'], true);
-
-                foreach ($tagIds as $tagKey => $value) {
-                    $tagIds[$tagKey] = $value['tagId'];
-                }
-
-                $object['tagIds'] = $tagIds;
-            }
-
-            unset($object);
-
-            $responseData = json_encode($response);
+            $responseData = json_encode($normalizedData);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -172,21 +156,9 @@ class PostController extends BaseController
 
             $response = $model->getPost($insertId);
 
-            $outputData = $response[0];
+            $normalizedData = $this->restoreInitialData($response);
 
-            foreach ($outputData as $key => $value) {
-                $outputData[$key] = stripslashes($value);
-            }
-
-            $tagIds = json_decode($outputData['tagIds'], true);
-
-            foreach ($tagIds as $key => $value) {
-                $tagIds[$key] = $value['tagId'];
-            }
-
-            $outputData['tagIds'] = $tagIds;
-
-            $responseData = json_encode($outputData);
+            $responseData = json_encode($normalizedData[0]);
             $httpResponseHeader = $this->getStatusHeader201($uri[3], $insertId);
         }
         catch (Error $e) {
@@ -279,7 +251,10 @@ class PostController extends BaseController
             }
 
             $postData = $model->getPost($postId);
-            $responseData = json_encode($postData[0]);
+
+            $normalizedData = $this->restoreInitialData($postData);
+
+            $responseData = json_encode($normalizedData[0]);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
