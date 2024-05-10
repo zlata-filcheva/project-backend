@@ -9,8 +9,8 @@ class BaseController
     const HEADERS_200 = [
         "Content-Type: application/json",
         "HTTP/1.1 200 OK",
-        "Access-Control-Allow-Origin: *" . BaseController::FRONT_END_URI,
-        "Access-Control-Allow-Methods: GET",
+        "Access-Control-Allow-Origin: " . BaseController::FRONT_END_URI,
+        "Access-Control-Allow-Methods: GET, PATCH, DELETE",
         "Access-Control-Allow-Headers: Content-Type",
         "Access-Control-Allow-Credentials: true",
         "Access-Control-Max-Age: 86400"

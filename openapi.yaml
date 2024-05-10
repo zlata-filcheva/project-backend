@@ -23,6 +23,8 @@ paths:
                       type: number
                     name:
                       type: string
+                    description:
+                      type: string
     post:
       description: Allows to create a new category
       requestBody:
@@ -33,8 +35,11 @@ paths:
               type: object
               required:
                 - category
+                - description
               properties:
                 category:
+                  type: string
+                description:
                   type: string
       responses:
         '201':
@@ -47,6 +52,8 @@ paths:
                   id:
                     type: number
                   name:
+                    type: string
+                  description:
                     type: string
   /tags:
     get:

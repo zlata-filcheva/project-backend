@@ -4,7 +4,8 @@ require_once PROJECT_ROOT_PATH . "/model/Database.php";
 const GET_CATEGORY_SQL = <<<'SQL'
 SELECT 
     id,
-    name
+    name,
+    description
 FROM categories 
 WHERE id = ?
 SQL;
@@ -12,15 +13,16 @@ SQL;
 const GET_CATEGORIES_LIST_SQL = <<<'SQL'
 SELECT 
     id, 
-    name
+    name,
+    description
 FROM categories 
 ORDER BY name ASC 
 SQL;
 
 const CREATE_CATEGORY_SQL = <<<'SQL'
 INSERT INTO categories (
-    name
-) VALUES (?)
+    name, description
+) VALUES (?, ?)
 SQL;
 
 class CategoryModel extends Database
@@ -35,8 +37,11 @@ class CategoryModel extends Database
         return $this->selectData(GET_CATEGORIES_LIST_SQL);
     }
 
-    public function createCategory($category = '')
+    public function createCategory($category = '', $description = '')
     {
-        return $this->modifyData(CREATE_CATEGORY_SQL, 's', [$category]);
+        $types = 'ss';
+        $params = [$category, $description];
+
+        return $this->modifyData(CREATE_CATEGORY_SQL, $types, $params);
     }
 }

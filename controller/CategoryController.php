@@ -66,10 +66,11 @@ class CategoryController extends BaseController
             $model = new CategoryModel();
 
             $category = $_POST["category"];
+            $description = $_POST["description"];
 
             $uri = $this->getUri();
 
-            $output = $model->createCategory($category);
+            $output = $model->createCategory($category, $description);
             $insertId = $output['insert_id'];
             $response = $model->getCategory($insertId);
 
