@@ -43,14 +43,14 @@ class UserController extends BaseController
             return;
         }
 
-        $arrQueryStringParams = $this->getQueryStringParams();
-
         try {
             $model = new UserModel();
 
             $id = $uri[4];
+            $decodedId = urldecode($id);
+            $lowerCaseId = strtolower($decodedId);
 
-            $response = $model->getUser($id);
+            $response = $model->getUser($lowerCaseId);
             $user = $response[0];
 
             $responseData = json_encode($user);
@@ -71,28 +71,30 @@ class UserController extends BaseController
     {
         $responseData = "";
         $httpResponseHeader = "";
-        $expectedPostVariables = [
-            $_POST['id'],
-            $_POST['nickName'],
-            $_POST['name'],
-            $_POST['surname'],
-        ];
-
-        foreach ($expectedPostVariables as $value) {
-            if (!isset($value)) {
-                $this->sendStatusCode422();
-
-                return;
-            }
-        }
 
         try {
             $model = new UserModel();
 
-            $id = $_POST['id'];
-            $nickName = $_POST['nickName'];
-            $name = $_POST['name'];
-            $surname = $_POST['surname'];
+            $inputData = file_get_contents('php://input');
+            $decodedData = json_decode($inputData);
+
+            $id = $decodedData->id ?? '';
+            $nickname = $decodedData->nickname ?? '';
+            $name = $decodedData->name ?? '';
+            $surname = $decodedData->surname ?? '';
+
+            $nickname = strtolower($nickname);
+
+            if (
+                !(strlen($id) > 0)
+                || !(strlen($nickname) > 0)
+                || !(strlen($name) > 0)
+                || !(strlen($surname) > 0)
+            ) {
+                $this->sendStatusCode422();
+
+                return;
+            }
 
             $uri = $this->getUri();
 
@@ -104,7 +106,7 @@ class UserController extends BaseController
                 return;
             }
 
-            $model->createUser($id, $nickName, $name, $surname);
+            $model->createUser($id, $nickname, $name, $surname);
             $response = $model->getUser($id);
 
             $responseData = json_encode($response[0]);
