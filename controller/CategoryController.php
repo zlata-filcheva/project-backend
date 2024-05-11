@@ -56,17 +56,22 @@ class CategoryController extends BaseController
 
     public function createCategory()
     {
-        if (!isset($_POST["category"])) {
-            $this->sendStatusCode422();
-
-            return;
-        }
-
         try {
             $model = new CategoryModel();
 
-            $category = $_POST["category"];
-            $description = $_POST["description"];
+            $inputData = file_get_contents('php://input');
+            $decodedData = json_decode($inputData);
+
+            $category = $decodedData->category ?? '';
+            $description = $decodedData->description ?? '';
+
+            $category = strtolower($category);
+
+            if (!(strlen($category) > 0) || !(strlen($description) > 0)) {
+                $this->sendStatusCode422();
+
+                return;
+            }
 
             $uri = $this->getUri();
 
