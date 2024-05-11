@@ -122,7 +122,7 @@ paths:
                     type: string
                   surname:
                     type: string
-                  nickName:
+                  nickname:
                     type: string
     post:
       description: Allows to add missing information about user
@@ -136,7 +136,7 @@ paths:
                 - id
                 - name
                 - surname
-                - nickName
+                - nickname
               properties:
                 id:
                   type: string
@@ -144,7 +144,7 @@ paths:
                   type: string
                 surname:
                   type: string
-                nickName:
+                nickname:
                   type: string
       responses:
         '201':

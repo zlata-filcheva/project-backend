@@ -4,7 +4,7 @@ require_once PROJECT_ROOT_PATH . "/model/Database.php";
 const GET_USER_SQL = <<<'SQL'
 SELECT 
     id,
-    nickName,
+    nickname,
     name,
     surname
 FROM users 
@@ -14,7 +14,7 @@ SQL;
 const CREATE_USER_SQL = <<<'SQL'
 INSERT INTO users (
     id,
-    nickName,
+    nickname,
     name,
     surname
 ) VALUES (?, ?, ?, ?)
@@ -29,9 +29,9 @@ class UserModel extends Database
         return $this->selectData(GET_USER_SQL, 's', $params);
     }
 
-    public function createUser($id, $nickName, $name, $surname)
+    public function createUser($id, $nickname, $name, $surname)
     {
-        $params = [$id, $nickName, $name, $surname];
+        $params = [$id, $nickname, $name, $surname];
 
         return $this->modifyData(CREATE_USER_SQL, 'ssss', $params);
     }
