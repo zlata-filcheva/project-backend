@@ -91,7 +91,7 @@ class PostModel extends Database
         return $this->selectData($query, $types, $params);
     }
 
-    public function getPostsList($rowCount, $offset)
+    public function getPostsList($rowCount = 20, $offset = 0)
     {
         $params = [$rowCount, $offset];
 
