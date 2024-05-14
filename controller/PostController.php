@@ -76,6 +76,8 @@ class PostController extends BaseController
 
             $model = new PostModel();
 
+            $tagController = new TagController();
+
             [
                 'rowCount' => $rowCount,
                 'offset' => $offset
@@ -84,6 +86,18 @@ class PostController extends BaseController
             $response = $model->getPostsList($rowCount, $offset);
 
             $normalizedData = $this->restoreInitialData($response);
+
+            foreach ($normalizedData as &$value) {
+                $tagIds = $value['tagIds'];
+
+                $tagList = $tagController->getSelectedTagsList($tagIds);
+
+                unset($value['tagIds']);
+
+                $value['tagList'] = $tagList;
+            }
+
+            unset($value);
 
             $responseData = json_encode($normalizedData);
             $httpResponseHeader = self::HEADERS_200;

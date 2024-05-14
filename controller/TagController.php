@@ -2,6 +2,13 @@
 
 class TagController extends BaseController
 {
+    public function getSelectedTagsList($ids)
+    {
+        $model = new TagModel();
+
+        return $model->getSelectedTagsList($ids);
+    }
+
     public function hasTags($ids): bool
     {
         if (count($ids) > 5) {
