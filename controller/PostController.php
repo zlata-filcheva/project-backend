@@ -104,21 +104,7 @@ class PostController extends BaseController
         $responseData = "";
         $httpResponseHeader = "";
 
-        $expectedPostVariables = [
-            $_POST['content'],
-            $_POST['title'],
-            $_POST['categoryId'],
-            $_POST['userId'],
-            $_POST['tagIds']
-        ];
 
-        foreach ($expectedPostVariables as $value) {
-            if (!isset($value)) {
-                $this->sendStatusCode422();
-
-                return;
-            }
-        }
 
         try {
             $model = new PostModel();
@@ -127,11 +113,26 @@ class PostController extends BaseController
             $categoryController = new CategoryController();
             $tagController = new TagController();
 
-            $content = $_POST['content'];
-            $title = $_POST['title'];
-            $categoryId = $_POST['categoryId'];
-            $userId = $_POST['userId'];
-            $tagIds = $_POST['tagIds'];
+            $inputData = file_get_contents('php://input');
+            $decodedData = json_decode($inputData);
+
+            $title = $decodedData->title ?? '';
+            $content = $decodedData->content ?? '';
+            $categoryId = $decodedData->categoryId ?? '';
+            $userId = $decodedData->userId ?? '';
+            $tagIds = $decodedData->tagIds ?? '';
+
+            if (
+                !(strlen($title) > 0)
+                || !(strlen($content) > 0)
+                || !(strlen($categoryId) > 0)
+                || !(strlen($userId) > 0)
+                || !(count($tagIds) > 0)
+            ) {
+                $this->sendStatusCode422();
+
+                return;
+            }
 
             $uri = $this->getUri();
 
