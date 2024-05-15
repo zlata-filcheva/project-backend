@@ -289,6 +289,19 @@ paths:
                     type: array
                     items:
                       type: number
+  /posts/count:
+    get:
+      description: returns a count of all posts
+      responses:
+        '200':
+          description: Successfully returned a count of all posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
 
 components:
   schemas:

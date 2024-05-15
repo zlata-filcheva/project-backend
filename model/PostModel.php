@@ -1,6 +1,12 @@
 <?php
 require_once PROJECT_ROOT_PATH . "/model/Database.php";
 
+const GET_POSTS_COUNT = <<<'SQL'
+SELECT 
+    COUNT(id) AS count
+FROM posts;
+SQL;
+
 const IS_AUTHOR_SQL = <<<'SQL'
 SELECT 
     id, 
@@ -78,6 +84,11 @@ SQL;
 
 class PostModel extends Database
 {
+    public function getPostsCount()
+    {
+        return $this->selectData(GET_POSTS_COUNT);
+    }
+
     public function getPost($id, $userId = '')
     {
         $trimmedUserId = trim($userId);

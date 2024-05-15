@@ -39,8 +39,20 @@ class PostController extends BaseController
     public function get()
     {
         $requestMethod = $_SERVER["REQUEST_METHOD"];
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $uri = explode( '/', $uri );
 
         if (strtoupper($requestMethod) === 'GET') {
+            if (array_key_exists(4, $uri)) {
+                if ($uri[4] === 'count') {
+                    $this->getPostsCount();
+
+                    return;
+                }
+
+                $this->sendStatusCode422();
+            }
+
             $this->getPostsList();
 
             return;
@@ -113,12 +125,31 @@ class PostController extends BaseController
         }
     }
 
+    public function getPostsCount() {
+        try {
+            $model = new PostModel();
+
+            $response = $model->getPostsCount();
+
+            $responseData = json_encode($response[0]);
+            $httpResponseHeader = self::HEADERS_200;
+        }
+        catch (Error $e) {
+                $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+                $responseData = json_encode(['error' => $strErrorDesc]);
+                $httpResponseHeader = self::HEADERS_500;
+
+            }
+        finally {
+                $this->sendOutput($responseData, $httpResponseHeader);
+            }
+    }
+
     public function createPost()
     {
         $responseData = "";
         $httpResponseHeader = "";
-
-
 
         try {
             $model = new PostModel();

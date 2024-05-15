@@ -24,18 +24,16 @@ $postController = new PostController();
 $tagController = new TagController();
 $userController = new UserController();
 
-$strMethodName = array_key_exists(4, $uri) ? $uri[4] : 'get';
-
 if ($uri[3] === "categories") {
     $categoryController->get();
 }
 
 if ($uri[3] === "comments") {
-    $commentController->{$strMethodName}();
+    $commentController->get();
 }
 
 if ($uri[3] === "posts") {
-    $postController->{$strMethodName}();
+    $postController->get();
 }
 
 if ($uri[3] === "tags") {
