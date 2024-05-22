@@ -253,16 +253,36 @@ paths:
                     type: array
                     items:
                       type: number
-    patch:
-      description: Allows to update post title or/and content
+    put:
+      description: Allows to update a post
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/PostPatchContent'
-                - $ref: '#/components/schemas/PostPatchTags'
+              type: object
+              required:
+                - title
+                - content
+                - categoryId
+                - tagIds
+                - id
+                - userId
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                categoryId:
+                  type: number
+                tagIds:
+                  type: array
+                  items:
+                    type: number
+                id:
+                  type: number
+                userId:
+                  type: string
       responses:
         '200':
           description: Successfully updated post title or/and content
@@ -273,13 +293,13 @@ paths:
                 properties:
                   id:
                     type: number
+                  title:
+                    type: string
                   content:
                     type: string
                   creationDate:
                     type: string
                   updateDate:
-                    type: string
-                  title:
                     type: string
                   categoryId:
                     type: number
@@ -302,38 +322,3 @@ paths:
                 properties:
                   count:
                     type: number
-
-components:
-  schemas:
-    PostPatchContent:
-      type: object
-      anyOf:
-        - required:
-            - content
-        - required:
-            - title
-      required:
-        - postId
-        - userId
-      properties:
-        content:
-          type: string
-        title:
-          type: string
-        postId:
-          type: number
-        userId:
-          type: string
-    PostPatchTags:
-      type: object
-      required:
-        - postId
-        - userId
-        - tagIds
-      properties:
-        postId:
-          type: number
-        userId:
-          type: string
-        tagIds:
-          type: array

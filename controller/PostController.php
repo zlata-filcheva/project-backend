@@ -64,7 +64,7 @@ class PostController extends BaseController
             return;
         }
 
-        if (strtoupper($requestMethod) === 'PATCH') {
+        if (strtoupper($requestMethod) === 'PUT') {
             $this->updatePost();
 
             return;
@@ -127,11 +127,26 @@ class PostController extends BaseController
 
     public function getPostsCount() {
         try {
+            $arrQueryStringParams = $this->getQueryStringParams();
+
+            if (!isset($arrQueryStringParams['rowCount']) && !$arrQueryStringParams['rowCount']) {
+                throw new Error('No rowCount');
+            }
+
+            [
+                'rowCount' => $rowCount,
+            ] = $arrQueryStringParams;
+
             $model = new PostModel();
 
             $response = $model->getPostsCount();
+            $pagesAmount = ceil(($response[0]['count'] ?? 1) / $rowCount);
 
-            $responseData = json_encode($response[0]);
+            $output = [
+                'pagesTotal' => $pagesAmount
+            ];
+
+            $responseData = json_encode($output);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -224,42 +239,34 @@ class PostController extends BaseController
         $responseData = "";
         $httpResponseHeader = "";
 
-        $inputData = file_get_contents('php://input');
-        $parsedData = $this->parseFormData($inputData);
+        try {
+            $model = new PostModel();
 
-        $expectedPutKeys = ['postId', 'userId'];
-        $expectedOptionalKeys = ['content', 'title', 'tagIds'];
-        $hasOptionalKey = false;
+            $tagController = new TagController();
+            $categoryController = new CategoryController();
 
-        foreach ($expectedPutKeys as $value) {
-            if (!array_key_exists($value, $parsedData)) {
+            $inputData = file_get_contents('php://input');
+            $decodedData = json_decode($inputData);
+
+            $id = $decodedData->id ?? '';
+            $title = $decodedData->title ?? '';
+            $content = $decodedData->content ?? '';
+            $categoryId = $decodedData->categoryId ?? '';
+            $userId = $decodedData->userId ?? '';
+            $tagIds = $decodedData->tagIds ?? '';
+
+            if (
+                !(strlen($title) > 0)
+                || !(strlen($content) > 0)
+                || !(strlen($categoryId) > 0)
+                || !(count($tagIds) > 0)
+            ) {
                 $this->sendStatusCode422();
 
                 return;
             }
-        }
 
-        foreach ($expectedOptionalKeys as $value) {
-            if (array_key_exists($value, $parsedData)) {
-                $hasOptionalKey = true;
-
-                break;
-            }
-        }
-
-        if (!$hasOptionalKey) {
-            $this->sendStatusCode422();
-
-            return;
-        }
-
-        try {
-            $model = new PostModel();
-
-            $postId = $parsedData['postId'];
-            $userId = $parsedData['userId'];
-
-            $isAuthor = $this->hasPost($postId, $userId);
+            $isAuthor = $this->hasPost($id, $userId);
 
             if (!$isAuthor) {
                 $this->sendStatusCode422();
@@ -267,38 +274,38 @@ class PostController extends BaseController
                 return;
             }
 
-            if (isset($parsedData['content']) || isset($parsedData['title'])) {
-                $content = $parsedData['content'] ?? '';
-                $title = $parsedData['title'] ?? '';
+            $hasTags = $tagController->hasTags($tagIds);
+            $hasCategory = $categoryController->hasCategory($categoryId);
 
-                $model->updatePostContent($content, $title, $postId, $userId);
+            if (!$hasTags || !$hasCategory) {
+                $this->sendStatusCode422();
+
+                return;
             }
 
-            if (isset($parsedData['tagIds'])) {
-                $tagIds = $parsedData['tagIds'];
+            $assocTagIds = [];
 
-                $tagController = new TagController();
-
-                $hasTags = $tagController->hasTags($tagIds);
-
-                if (!$hasTags) {
-                    $this->sendStatusCode422();
-
-                    return;
-                }
-
-                $assocTagIds = [];
-
-                foreach ($tagIds as $value) {
-                    $assocTagIds[] = ["tagId" => $value];
-                }
-
-                $model->updatePostTags($assocTagIds, $postId, $userId);
+            foreach ($tagIds as $value) {
+                $assocTagIds[] = ["tagId" => $value];
             }
 
-            $postData = $model->getPost($postId);
+            $model->updatePost(
+                $title,
+                $content,
+                $categoryId,
+                $assocTagIds,
+                $id,
+                $userId
+            );
 
-            $normalizedData = $this->restoreInitialData($postData);
+
+
+            $output = $model->getPost($postId);
+            $insertId = $output['insert_id'];
+
+            $response = $model->getPost($insertId);
+
+            $normalizedData = $this->restoreInitialData($response);
 
             $responseData = json_encode($normalizedData[0]);
             $httpResponseHeader = self::HEADERS_200;
@@ -308,7 +315,6 @@ class PostController extends BaseController
 
             $responseData = json_encode(['error' => $strErrorDesc]);
             $httpResponseHeader = self::HEADERS_500;
-
         }
         finally {
             $this->sendOutput($responseData, $httpResponseHeader);

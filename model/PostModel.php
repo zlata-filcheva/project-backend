@@ -62,22 +62,15 @@ INSERT INTO posts (
 ) VALUES (?, ?, ?, ?, ?)
 SQL;
 
-const UPDATE_POST_CONTENT_START_SQL = <<<'SQL'
+const UPDATE_POST_SQL = <<<'SQL'
 UPDATE posts 
 SET
-SQL;
-
-const UPDATE_POST_CONTENT_END_SQL = <<<'SQL'
-updateDate = NOW() 
+    updateDate = NOW(),
+    title = ?,
+    content = ?,
+    categoryId = ?,
+    tagIds = ?
 WHERE 
-    id = ?
-    AND userId = ?
-SQL;
-
-const UPDATE_POST_TAGS_SQL = <<<'SQL'
-UPDATE posts
-SET tagIds = ?
-WHERE
     id = ?
     AND userId = ?
 SQL;
@@ -116,48 +109,24 @@ class PostModel extends Database
         return $this->modifyData(CREATE_POST_SQL, 'ssiss', $params);
     }
 
-    public function updatePostContent($content, $title, $id, $userId)
-    {
-        $query = '';
-        $types = '';
+    public function updatePost(
+        $title,
+        $content,
+        $categoryId,
+        $tagIds,
+        $id,
+        $userId
+    ) {
+        $types = 'ssisis';
+        $params = [
+            $title,
+            $content,
+            $categoryId,
+            $tagIds,
+            $id,
+            $userId
+        ];
 
-        $params = [];
-
-        $trimmedContent = trim($content);
-        $contentLength =  strlen($trimmedContent);
-        $hasContent = $contentLength > 0;
-
-        $trimmedTitle = trim($title);
-        $titleLength =  strlen($trimmedTitle);
-        $hasTitle = $titleLength > 0;
-
-        $query .= UPDATE_POST_CONTENT_START_SQL;
-
-        if ($hasContent) {
-            $query .= ' content = ?, ';
-            $types .= 's';
-            $params = [...$params, $content];
-        }
-
-        if ($hasTitle) {
-            $query .= ' title = ?, ';
-            $types .= 's';
-            $params = [...$params, $title];
-        }
-
-        $types .= 'is';
-        $params = [...$params, $id, $userId];
-
-        $query .= UPDATE_POST_CONTENT_END_SQL;
-
-        return $this->modifyData($query, $types, $params);
-    }
-
-    public function updatePostTags($tagIds, $id, $userId)
-    {
-        $types = 'sis';
-        $params = [$tagIds, $id, $userId];
-
-        return $this->modifyData(UPDATE_POST_TAGS_SQL, $types, $params);
+        return $this->modifyData(UPDATE_POST_SQL, $types, $params);
     }
 }
