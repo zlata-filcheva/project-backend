@@ -50,7 +50,7 @@ class PostController extends BaseController
                     return;
                 }
 
-                $this->sendStatusCode422();
+                $this->getPost($uri[4]);
             }
 
             $this->getPostsList();
@@ -71,6 +71,32 @@ class PostController extends BaseController
         }
 
         $this->sendStatusCode422();
+    }
+
+    public function getPost($id) {
+        $responseData = "";
+        $httpResponseHeader = "";
+
+        try {
+            $model = new PostModel();
+
+            $response = $model->getPost($id);
+
+            $normalizedData = $this->restoreInitialData($response);
+
+            $responseData = json_encode($normalizedData[0]);
+            $httpResponseHeader = self::HEADERS_200;
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
+        }
     }
 
     public function getPostsList()
@@ -239,16 +265,28 @@ class PostController extends BaseController
         $responseData = "";
         $httpResponseHeader = "";
 
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $uri = explode( '/', $uri );
+
+        if (!array_key_exists(4, $uri)) {
+            $this->sendStatusCode422();
+
+            return;
+        }
+
         try {
             $model = new PostModel();
 
             $tagController = new TagController();
             $categoryController = new CategoryController();
 
+            $id = $uri[4];
+
+            echo $id;
+
             $inputData = file_get_contents('php://input');
             $decodedData = json_decode($inputData);
 
-            $id = $decodedData->id ?? '';
             $title = $decodedData->title ?? '';
             $content = $decodedData->content ?? '';
             $categoryId = $decodedData->categoryId ?? '';
@@ -298,12 +336,7 @@ class PostController extends BaseController
                 $userId
             );
 
-
-
-            $output = $model->getPost($postId);
-            $insertId = $output['insert_id'];
-
-            $response = $model->getPost($insertId);
+            $response = $model->getPost($id);
 
             $normalizedData = $this->restoreInitialData($response);
 
