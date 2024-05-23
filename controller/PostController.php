@@ -282,8 +282,6 @@ class PostController extends BaseController
 
             $id = $uri[4];
 
-            echo $id;
-
             $inputData = file_get_contents('php://input');
             $decodedData = json_decode($inputData);
 
@@ -341,7 +339,7 @@ class PostController extends BaseController
             $normalizedData = $this->restoreInitialData($response);
 
             $responseData = json_encode($normalizedData[0]);
-            $httpResponseHeader = self::HEADERS_200;
+            $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
