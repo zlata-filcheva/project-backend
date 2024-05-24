@@ -29,7 +29,10 @@ class CategoryModel extends Database
 {
     public function getCategory($id)
     {
-        return $this->selectData(GET_CATEGORY_SQL, 'i', [$id]);
+        $types = 'i';
+        $params = [$id];
+
+        return $this->selectData(GET_CATEGORY_SQL, $types, $params);
     }
 
     public function getCategoriesList()

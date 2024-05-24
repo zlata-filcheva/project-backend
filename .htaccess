@@ -1,6 +1,0 @@
-Header set Content-Type application/json
-Header set Access-Control-Allow-Origin https://127.0.0.1:5173
-Header set Access-Control-Allow-Methods "GET, POST, PATCH, DELETE"
-Header set Access-Control-Allow-Credentials true
-Header set Access-Control-Max-Age 86400
-

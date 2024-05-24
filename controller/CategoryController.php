@@ -32,9 +32,6 @@ class CategoryController extends BaseController
 
     public function getCategoriesList()
     {
-        $responseData = "";
-        $httpResponseHeader = "";
-
         try {
             $model = new CategoryModel();
 
@@ -87,7 +84,6 @@ class CategoryController extends BaseController
 
             $responseData = json_encode(['error' => $strErrorDesc]);
             $httpResponseHeader = self::HEADERS_500;
-
         }
         finally {
             $this->sendOutput($responseData, $httpResponseHeader);

@@ -99,11 +99,11 @@ paths:
                       type: number
                     name:
                       type: string
-  /users/{userId}:
+  /users/{id}:
     get:
       description: returns information about an user by id
       parameters:
-        - name: userId
+        - name: id
           in: path
           required: true
           schema:
@@ -126,6 +126,12 @@ paths:
                     type: string
     post:
       description: Allows to add missing information about user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -253,19 +259,87 @@ paths:
                     type: array
                     items:
                       type: number
-    patch:
-      description: Allows to update post title or/and content
+    put:
+      description: Allows to update a post
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/PostPatchContent'
-                - $ref: '#/components/schemas/PostPatchTags'
+              type: object
+              required:
+                - title
+                - content
+                - categoryId
+                - tagIds
+                - id
+                - userId
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                categoryId:
+                  type: number
+                tagIds:
+                  type: array
+                  items:
+                    type: number
+                id:
+                  type: number
+                userId:
+                  type: string
       responses:
         '200':
           description: Successfully updated post title or/and content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  title:
+                    type: string
+                  content:
+                    type: string
+                  creationDate:
+                    type: string
+                  updateDate:
+                    type: string
+                  categoryId:
+                    type: number
+                  userId:
+                    type: string
+                  tagIds:
+                    type: array
+                    items:
+                      type: number
+  /posts/count:
+    get:
+      description: returns a count of all posts
+      responses:
+        '200':
+          description: Successfully returned a count of all posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+  /posts/{id}:
+    get:
+      description: returns a post by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Successfully returned a post
           content:
             application/json:
               schema:
@@ -289,38 +363,3 @@ paths:
                     type: array
                     items:
                       type: number
-
-components:
-  schemas:
-    PostPatchContent:
-      type: object
-      anyOf:
-        - required:
-            - content
-        - required:
-            - title
-      required:
-        - postId
-        - userId
-      properties:
-        content:
-          type: string
-        title:
-          type: string
-        postId:
-          type: number
-        userId:
-          type: string
-    PostPatchTags:
-      type: object
-      required:
-        - postId
-        - userId
-        - tagIds
-      properties:
-        postId:
-          type: number
-        userId:
-          type: string
-        tagIds:
-          type: array
