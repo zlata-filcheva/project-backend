@@ -70,6 +70,12 @@ class PostController extends BaseController
             return;
         }
 
+        if (strtoupper($requestMethod) === 'DELETE') {
+            $this->deletePost();
+
+            return;
+        }
+
         $this->sendStatusCode422();
     }
 
@@ -80,9 +86,23 @@ class PostController extends BaseController
         try {
             $model = new PostModel();
 
+            $tagController = new TagController();
+
             $response = $model->getPost($id);
 
             $normalizedData = $this->restoreInitialData($response);
+
+            foreach ($normalizedData as &$value) {
+                $tagIds = $value['tagIds'];
+
+                $tagList = $tagController->getSelectedTagsList($tagIds);
+
+                unset($value['tagIds']);
+
+                $value['tagList'] = $tagList;
+            }
+
+            unset($value);
 
             $responseData = json_encode($normalizedData[0]);
             $httpResponseHeader = self::HEADERS_200;
@@ -340,6 +360,57 @@ class PostController extends BaseController
 
             $responseData = json_encode($normalizedData[0]);
             $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
+        }
+    }
+
+    public function deletePost()
+    {
+        $responseData = "";
+        $httpResponseHeader = "";
+
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $uri = explode( '/', $uri );
+
+        if (!array_key_exists(4, $uri)) {
+            $this->sendStatusCode422();
+
+            return;
+        }
+
+        try {
+            $model = new PostModel();
+
+            $id = $uri[4];
+
+            $inputData = file_get_contents('php://input');
+            $decodedData = json_decode($inputData);
+
+            $userId = $decodedData->userId ?? '';
+
+            $isAuthor = $this->hasPost($id, $userId);
+
+            if (!$isAuthor) {
+                $this->sendStatusCode422();
+
+                return;
+            }
+
+            $model->deletePost(
+                $id,
+                $userId
+            );
+
+            $responseData = "Post has been deleted";
+            $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';

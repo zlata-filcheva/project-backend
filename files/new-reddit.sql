@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 13, 2024 at 07:17 PM
+-- Generation Time: May 24, 2024 at 08:24 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `forum`
+-- Database: `new-reddit`
 --
 
 -- --------------------------------------------------------
@@ -71,15 +71,9 @@ CREATE TABLE `posts` (
   `title` varchar(255) NOT NULL,
   `categoryId` int(8) NOT NULL,
   `userId` varchar(255) NOT NULL,
-  `tagIds` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
+  `tagIds` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `isDeleted` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `posts`
---
-
-INSERT INTO `posts` (`id`, `content`, `creationDate`, `updateDate`, `title`, `categoryId`, `userId`, `tagIds`) VALUES
-(70, 'I did not tell such thing!', '2024-05-07 21:14:12', '2024-05-07 21:19:40', 'Tornado problem solutionssssdfdddffff', 11, 'superKebab', '[{\"tagId\":\"82\"}]');
 
 -- --------------------------------------------------------
 

@@ -4,7 +4,8 @@ require_once PROJECT_ROOT_PATH . "/model/Database.php";
 const GET_POSTS_COUNT = <<<'SQL'
 SELECT 
     COUNT(id) AS count
-FROM posts;
+FROM posts
+WHERE isDeleted = 0
 SQL;
 
 const IS_AUTHOR_SQL = <<<'SQL'
@@ -21,6 +22,7 @@ FROM posts
 WHERE 
     id = ?
     AND userId = ?
+    AND isDeleted = 0
 SQL;
 
 const GET_POST_SQL = <<<'SQL'
@@ -34,7 +36,9 @@ SELECT
     userId,
     tagIds
 FROM posts 
-WHERE id = ?
+WHERE 
+    id = ? 
+    AND isDeleted = 0
 SQL;
 
 const GET_POSTS_LIST_SQL = <<<'SQL'
@@ -48,6 +52,7 @@ SELECT
     userId,
     tagIds
 FROM posts 
+WHERE isDeleted = 0
 ORDER BY creationDate DESC 
 LIMIT ? OFFSET ?
 SQL;
@@ -70,6 +75,16 @@ SET
     content = ?,
     categoryId = ?,
     tagIds = ?
+WHERE 
+    id = ?
+    AND userId = ?
+SQL;
+
+const DELETE_POST_SQL = <<<'SQL'
+UPDATE posts 
+SET
+    updateDate = NOW(),
+    isDeleted = 1
 WHERE 
     id = ?
     AND userId = ?
@@ -128,5 +143,18 @@ class PostModel extends Database
         ];
 
         return $this->modifyData(UPDATE_POST_SQL, $types, $params);
+    }
+
+    public function deletePost(
+        $id,
+        $userId
+    ) {
+        $types = 'is';
+        $params = [
+            $id,
+            $userId
+        ];
+
+        return $this->modifyData(DELETE_POST_SQL, $types, $params);
     }
 }

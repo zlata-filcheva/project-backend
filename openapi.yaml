@@ -99,11 +99,11 @@ paths:
                       type: number
                     name:
                       type: string
-  /users/{userId}:
+  /users/{id}:
     get:
       description: returns information about an user by id
       parameters:
-        - name: userId
+        - name: id
           in: path
           required: true
           schema:
@@ -126,6 +126,12 @@ paths:
                     type: string
     post:
       description: Allows to add missing information about user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -322,3 +328,38 @@ paths:
                 properties:
                   count:
                     type: number
+  /posts/{id}:
+    get:
+      description: returns a post by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Successfully returned a post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  content:
+                    type: string
+                  creationDate:
+                    type: string
+                  updateDate:
+                    type: string
+                  title:
+                    type: string
+                  categoryId:
+                    type: number
+                  userId:
+                    type: string
+                  tagIds:
+                    type: array
+                    items:
+                      type: number
