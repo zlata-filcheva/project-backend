@@ -1,7 +1,17 @@
 <?php
 require_once PROJECT_ROOT_PATH . "/model/Database.php";
 
-const GET_COMMENTS_SQL = <<<'SQL'
+const IS_COMMENT_AUTHOR_SQL = <<<'SQL'
+SELECT 
+    id
+FROM comments 
+WHERE 
+    id = ?
+    AND userId = ?
+ORDER BY parentId ASC
+SQL;
+
+const GET_COMMENT_SQL = <<<'SQL'
 SELECT 
     id, 
     userId, 
@@ -11,127 +21,70 @@ SELECT
     postId,
     parentId
 FROM comments 
-WHERE postId = ?
-LIMIT ? OFFSET ?
+WHERE id = ?
+ORDER BY parentId ASC
+SQL;
+
+const GET_COMMENTS_LIST_SQL = <<<'SQL'
+SELECT 
+    id, 
+    userId, 
+    content,
+    likedBy,
+    dislikedBy,
+    postId,
+    parentId
+FROM comments 
+WHERE id = ?
+ORDER BY parentId ASC
 SQL;
 
 const CREATE_COMMENT_SQL = <<<'SQL'
 INSERT INTO comments (
     userId, 
     content,
-    postId
-) VALUES (?, ?, ?)
+    postId,
+    parentId
+) VALUES (?, ?, ?, ?)
 SQL;
 
 const UPDATE_COMMENT_CONTENT_SQL = <<<'SQL'
 UPDATE comments 
 SET content = ?
 WHERE
-    userId = ? AND postId = ?
+    userId = ? 
+    AND id = ?
 SQL;
-
-/*
-Remove
-
-UPDATE posts
-    SET tagIds = JSON_REMOVE(
-    tagIds, JSON_UNQUOTE(
-        REPLACE(
-            JSON_SEARCH( tagIds, 'one', '27', null, '$**.tagId' )
-            , '.tagId'
-            , ''
-        )
-    )
-) WHERE id = 3
-and JSON_SEARCH( tagIds, 'one', '27', null, '$**.tagId' ) IS NOT NULL ;
-
-
-[{"tagId":"27"},{"tagId":"28"}]
-
-
-Add
-
-
-
-
-UPDATE posts
-SET tagIds = CONCAT(tagIds, ', {"tagId": "55"}')
-
-WHERE id = 3 AND tagIds IS NOT NULL;
-
-const UPDATE_COMMENT_ADD_LIKE_SQL = <<<'SQL'
-UPDATE comments
-SET likedBy = JSON_REMOVE(likedBy, JSON_UNQUOTE(JSON_SEARCH(likedBy, 'one', '{"likedBy": 26}')))
-WHERE JSON_CONTAINS(likedBy, '{"likedBy": 26}');
-SQL;
-
-const UPDATE_COMMENT_REMOVE_LIKE_SQL = <<<'SQL'
-UPDATE comments SET
-                    likes = likes - 1 
-WHERE
-    userId = ? AND postId = ?
-SQL;
-
-const UPDATE_COMMENT_ADD_DISLIKE_SQL = <<<'SQL'
-UPDATE comments SET
-                    dislikes = dislikes + 1 
-WHERE
-    userId = ? AND postId = ?
-SQL;
-
-const UPDATE_COMMENT_REMOVE_DISLIKE_SQL = <<<'SQL'
-UPDATE comments SET
-                    dislikes = dislikes - 1 
-WHERE
-    userId = ? AND postId = ?
-SQL;
-*/
 
 class CommentModel extends Database
 {
-    public function getCommentsList($postId, $rowCount, $offset)
-    {
-        $params = [$postId, $rowCount, $offset];
+    public function getComment($id, $userId = '') {
+        $trimmedUserId = trim($userId);
+        $userIdLength =  strlen($trimmedUserId);
+        $hasUserId = $userIdLength > 0;
 
-        return $this->selectData(GET_COMMENTS_SQL, 'iii', $params);
+        $query = !($hasUserId > 0) ? GET_COMMENT_SQL : IS_COMMENT_AUTHOR_SQL;
+        $types = !($hasUserId > 0) ? 'i' : 'is';
+        $params = !($hasUserId > 0) ? [$id] : [$id, $userId];
+
+        return $this->selectData($query, $types, $params);
     }
 
-    public function createComment($userId, $content, $postId)
-    {
-        $params = [$userId, $content, $postId];
-
-        $this->modifyData(CREATE_COMMENT_SQL, 'ssi', $params);
+    public function getCommentsList($id) {
+        return $this->selectData(GET_COMMENTS_LIST_SQL, 'i', [$id]);
     }
 
-    /*
-    public function updateCommentContent($content, $userId, $postId) {
-        $params = [$content, $userId, $postId];
+    public function createComment($userId, $content, $postId, $parentId) {
+        $types = 'ssii';
+        $params = [$userId, $content, $postId, $parentId];
 
-        $this->modifyData(UPDATE_COMMENT_CONTENT_SQL, 'sii', $params);
+        return $this->modifyData(CREATE_COMMENT_SQL, $types, $params);
     }
 
-    public function updateCommentAddLike($userId, $postId) {
-        $params = [$userId, $postId];
+    public function updateCommentContent($content, $userId, $id) {
+        $types = 'ssi';
+        $params = [$content, $userId, $id];
 
-        $this->modifyData(UPDATE_COMMENT_ADD_LIKE_SQL, 'sii', $params);
+        return $this->modifyData(UPDATE_COMMENT_CONTENT_SQL, $types, $params);
     }
-
-    public function updateCommentRemoveLike($userId, $postId) {
-        $params = [$userId, $postId];
-
-        $this->modifyData(UPDATE_COMMENT_REMOVE_LIKE_SQL, 'sii', $params);
-    }
-
-    public function updateCommentAddDislike($userId, $postId) {
-        $params = [$userId, $postId];
-
-        $this->modifyData(UPDATE_COMMENT_ADD_DISLIKE_SQL, 'sii', $params);
-    }
-
-    public function updateCommentRemoveDislike($userId, $postId) {
-        $params = [$userId, $postId];
-
-        $this->modifyData(UPDATE_COMMENT_REMOVE_DISLIKE_SQL, 'sii', $params);
-    }
-    */
 }

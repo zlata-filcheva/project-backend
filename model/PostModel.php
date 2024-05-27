@@ -8,7 +8,7 @@ FROM posts
 WHERE isDeleted = 0
 SQL;
 
-const IS_AUTHOR_SQL = <<<'SQL'
+const IS_POST_AUTHOR_SQL = <<<'SQL'
 SELECT 
     id, 
     content, 
@@ -103,7 +103,7 @@ class PostModel extends Database
         $userIdLength =  strlen($trimmedUserId);
         $hasUserId = $userIdLength > 0;
 
-        $query = !($hasUserId > 0) ? GET_POST_SQL : IS_AUTHOR_SQL;
+        $query = !($hasUserId > 0) ? GET_POST_SQL : IS_POST_AUTHOR_SQL;
         $types = !($hasUserId > 0) ? 'i' : 'is';
         $params = !($hasUserId > 0) ? [$id] : [$id, $userId];
 

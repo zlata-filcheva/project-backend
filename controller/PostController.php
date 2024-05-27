@@ -27,7 +27,7 @@ class PostController extends BaseController
         return $outputData;
     }
 
-    public function hasPost($id, $userId): bool
+    public function hasPost($id, $userId = ''): bool
     {
         $model = new PostModel();
 
