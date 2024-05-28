@@ -78,6 +78,7 @@ SET
 WHERE 
     id = ?
     AND userId = ?
+    AND isDeleted = 0
 SQL;
 
 const DELETE_POST_SQL = <<<'SQL'

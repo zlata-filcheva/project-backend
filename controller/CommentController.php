@@ -165,7 +165,6 @@ class CommentController extends BaseController
             $inputData = file_get_contents('php://input');
             $decodedData = json_decode($inputData);
 
-            $postId = $decodedData->postId ?? '';
             $userId = $decodedData->userId ?? '';
             $content = $decodedData->content ?? '';
             $likedByUserId = $decodedData->likedByUserId ?? '';
@@ -293,11 +292,6 @@ class CommentController extends BaseController
                     $assocLikedByList = '[]';
                 }
 
-                //print_r($assocLikedByList);
-                //print_r($assocDislikedByList);
-
-                //return;
-
                 $model->updateCommentLikesList($assocLikedByList, $assocDislikedByList, $id);
 
                 $output = $model->getComment($id);
@@ -311,6 +305,60 @@ class CommentController extends BaseController
             }
 
             $this->sendStatusCode422();
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
+        }
+    }
+
+    public function deleteComment()
+    {
+        $responseData = "";
+        $httpResponseHeader = "";
+
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $uri = explode( '/', $uri );
+
+        if (!array_key_exists(4, $uri)) {
+            $this->sendStatusCode422();
+
+            return;
+        }
+
+        try {
+            $model = new CommentModel();
+
+            $id = $uri[4];
+
+            $inputData = file_get_contents('php://input');
+            $decodedData = json_decode($inputData);
+
+            $userId = $decodedData->userId ?? '';
+
+            if (!(strlen($id) > 0)) {
+                $this->sendStatusCode422();
+
+                return;
+            }
+
+            $isAuthor = $this->hasComment($id, $userId);
+
+            if (!$isAuthor) {
+                $this->sendStatusCode422();
+
+                return;
+            }
+
+            $model->deleteComment($id, $userId);
+
+            $responseData = "Comment has been deleted";
+            $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';

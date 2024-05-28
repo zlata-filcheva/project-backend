@@ -8,6 +8,7 @@ FROM comments
 WHERE 
     id = ?
     AND userId = ?
+    AND isDeleted = 0
 ORDER BY parentId ASC
 SQL;
 
@@ -21,7 +22,9 @@ SELECT
     postId,
     parentId
 FROM comments 
-WHERE id = ?
+WHERE 
+    id = ?
+    AND isDeleted = 0
 ORDER BY parentId ASC
 SQL;
 
@@ -35,7 +38,9 @@ SELECT
     postId,
     parentId
 FROM comments 
-WHERE id = ?
+WHERE 
+    id = ?
+    AND isDeleted = 0
 ORDER BY parentId ASC
 SQL;
 
@@ -54,6 +59,7 @@ SET content = ?
 WHERE
     userId = ? 
     AND id = ?
+    AND isDeleted = 0
 SQL;
 
 const UPDATE_COMMENT_LIKES_LISTS_SQL = <<<'SQL'
@@ -63,6 +69,16 @@ SET
     dislikedBy = ?
 WHERE
     id = ?
+AND isDeleted = 0
+SQL;
+
+const DELETE_COMMENT_SQL = <<<'SQL'
+UPDATE comments 
+SET 
+    isDeleted = 1
+WHERE
+    id = ?
+    AND userId = ?
 SQL;
 
 class CommentModel extends Database
@@ -102,5 +118,12 @@ class CommentModel extends Database
         $params = [$likedByList, $dislikedByList, $id];
 
         return $this->modifyData(UPDATE_COMMENT_LIKES_LISTS_SQL, $types, $params);
+    }
+
+    public function deleteComment($id, $userId) {
+        $types = 'is';
+        $params = [$id, $userId];
+
+        return $this->modifyData(DELETE_COMMENT_SQL, $types, $params);
     }
 }
