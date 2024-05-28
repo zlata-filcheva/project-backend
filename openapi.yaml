@@ -363,3 +363,123 @@ paths:
                     type: array
                     items:
                       type: number
+
+
+  /comments:
+    get:
+      description: returns a list of comments related to the post
+      parameters:
+        - name: postId
+          in: query
+          description: id of the post
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned a list of comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"
+    post:
+      description: Allows to create a new comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - postId
+                - content
+                - userId
+              properties:
+                content:
+                  type: string
+                postId:
+                  type: number
+                userId:
+                  type: string
+                parentId:
+                  type: number
+      responses:
+        '201':
+          description: Successfully created a new comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"
+  /comments/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+    patch:
+      description: Allows to update a comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              anyOf:
+                - required:
+                  - userId
+                  - content
+                  properties:
+                    content:
+                      type: string
+                    userId:
+                      type: string
+                - required:
+                  - likedByUserId
+                  properties:
+                    likedByUserId:
+                      type: string
+                - required:
+                    - dislikedByUserId
+                  properties:
+                    dislikedByUserId:
+                      type: string
+      responses:
+        '201':
+          description: Successfully updated comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"
+    delete:
+      description: Allows to delete a comment
+      responses:
+        '200':
+          description: Successfully deleted comment
+          content:
+            application/json:
+              schema:
+                type: string
+
+components:
+  schemas:
+    CommentResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        content:
+          type: string
+        creationDate:
+          type: string
+        updateDate:
+          type: string
+        categoryId:
+          type: number
+        userId:
+          type: string
+        tagIds:
+          type: array
+          items:
+            type: number

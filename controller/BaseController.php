@@ -80,10 +80,10 @@ class BaseController
         ];
     }
 
-    protected function sendStatusCode422()
+    protected function sendStatusCode422($message = '')
     {
         $this->sendOutput(
-            json_encode(self::RESPONSE_DATA_DECODED_422),
+            $message ?? json_encode(self::RESPONSE_DATA_DECODED_422),
             self::HEADERS_422
         );
     }
@@ -93,5 +93,41 @@ class BaseController
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
         return explode( '/', $uri );
+    }
+
+    public function restoreInitialData($initialData) {
+        $outputData = [];
+
+        foreach ($initialData as $key => $object) {
+            if (!is_array($object)) {
+                $outputData[$key] = $object;
+                
+                continue;
+            }
+
+            $newObject = [];
+
+            foreach ($object as $objectKey => $objValue) {
+                $decodedData = json_decode($objValue, true);
+
+                if (!is_array($decodedData)) {
+                    $newObject[$objectKey] = stripslashes($objValue);
+
+                    continue;
+                }
+
+                foreach ($decodedData as $arrKey => $arrValue) {
+                    foreach ($arrValue as $item) {
+                        $decodedData[$arrKey] = $item;
+                    }
+                }
+
+                $newObject[$objectKey] = $decodedData;
+            }
+
+            $outputData[$key] = $newObject;
+        }
+
+        return $outputData;
     }
 }
