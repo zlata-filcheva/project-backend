@@ -56,6 +56,15 @@ WHERE
     AND id = ?
 SQL;
 
+const UPDATE_COMMENT_LIKES_LISTS_SQL = <<<'SQL'
+UPDATE comments 
+SET 
+    likedBy = ?,
+    dislikedBy = ?
+WHERE
+    id = ?
+SQL;
+
 class CommentModel extends Database
 {
     public function getComment($id, $userId = '') {
@@ -86,5 +95,12 @@ class CommentModel extends Database
         $params = [$content, $userId, $id];
 
         return $this->modifyData(UPDATE_COMMENT_CONTENT_SQL, $types, $params);
+    }
+
+    public function updateCommentLikesList($likedByList, $dislikedByList, $id) {
+        $types = 'ssi';
+        $params = [$likedByList, $dislikedByList, $id];
+
+        return $this->modifyData(UPDATE_COMMENT_LIKES_LISTS_SQL, $types, $params);
     }
 }

@@ -56,21 +56,24 @@ class Database
                 throw New Exception("Unable to do prepared statement: " . $query);
             }
 
-            if(count($params) > 0) {
-                foreach ($params as &$value) {
-                    if (is_array($value)) {
-                        $value = json_encode($value);
+            if(count($params) < 1) {
+                $stmt->execute();
 
-                        break;
-                    }
+                return;
+            }
 
-                    $value = $this->connection->real_escape_string($value);
+            foreach ($params as &$value) {
+                if (is_array($value)) {
+                    $value = json_encode($value);
+
+                    continue;
                 }
 
-                unset($value);
-
-                $stmt->bind_param($types, ...$params);
+                $value = $this->connection->real_escape_string($value);
             }
+
+            unset($value);
+            $stmt->bind_param($types, ...$params);
 
             $stmt->execute();
 

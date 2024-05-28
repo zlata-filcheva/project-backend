@@ -63,7 +63,9 @@ class CommentController extends BaseController
 
             $response = $model->getCommentsList($id);
 
-            $responseData = json_encode($response[0]);
+            $normalizedData = $this->restoreInitialData($response);
+
+            $responseData = json_encode($normalizedData[0]);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -205,7 +207,10 @@ class CommentController extends BaseController
                 $response = $model->getComment($id);
 
                 $normalizedData = $this->restoreInitialData($response);
-                $likedByList = $normalizedData[0]['likedBy'];
+
+                $normalizedData = $normalizedData[0];
+                $likedByList = $normalizedData['likedBy'];
+                $dislikedByList = $normalizedData['dislikedBy'];
 
                 if (in_array($likedByUserId, $likedByList)) {
                     $this->sendStatusCode422();
@@ -213,7 +218,33 @@ class CommentController extends BaseController
                     return;
                 }
 
-                $output = $model->updateCommentsLikedBy($likedByUserId, $postId);
+                $isCurrentlyCommentDisliked = in_array($likedByUserId, $dislikedByList);
+
+                $newLikedByList = [...$likedByList, $likedByUserId];
+                $newDislikedByList = $isCurrentlyCommentDisliked
+                    ? array_filter($dislikedByList, function ($value) use ($likedByUserId) {
+                        return $value !== $likedByUserId;
+                    })
+                    : [];
+
+                $assocLikedByList = [];
+                $assocDislikedByList = [];
+
+                foreach ($newLikedByList as $value) {
+                    $assocLikedByList[] = ["likedBy" => $value];
+                }
+
+                foreach ($newDislikedByList as $value) {
+                    $assocDislikedByList[] = ["dislikedBy" => $value];
+                }
+
+                if (count($assocDislikedByList) < 1) {
+                    $assocDislikedByList = '[]';
+                }
+
+                $model->updateCommentLikesList($assocLikedByList, $assocDislikedByList, $id);
+
+                $output = $model->getComment($id);
 
                 $outputData = $this->restoreInitialData($output);
 
@@ -227,7 +258,10 @@ class CommentController extends BaseController
                 $response = $model->getComment($id);
 
                 $normalizedData = $this->restoreInitialData($response);
-                $dislikedByList = $normalizedData[0]['dislikedBy'];
+
+                $normalizedData = $normalizedData[0];
+                $likedByList = $normalizedData['likedBy'];
+                $dislikedByList = $normalizedData['dislikedBy'];
 
                 if (in_array($dislikedByUserId, $dislikedByList)) {
                     $this->sendStatusCode422();
@@ -235,7 +269,38 @@ class CommentController extends BaseController
                     return;
                 }
 
-                $output = $model->updateCommentsLikedBy($dislikedByUserId, $postId);
+                $isCurrentlyCommentLiked = in_array($dislikedByUserId, $likedByList);
+
+                $newDislikedByList = [...$dislikedByList, $dislikedByUserId];
+                $newLikedByList = $isCurrentlyCommentLiked
+                    ? array_filter($likedByList, function ($value) use ($dislikedByUserId) {
+                        return $value !== $dislikedByUserId;
+                    })
+                    : [];
+
+                $assocLikedByList = [];
+                $assocDislikedByList = [];
+
+                foreach ($newLikedByList as $value) {
+                    $assocLikedByList[] = ["likedBy" => $value];
+                }
+
+                foreach ($newDislikedByList as $value) {
+                    $assocDislikedByList[] = ["dislikedBy" => $value];
+                }
+
+                if (count($assocLikedByList) < 1) {
+                    $assocLikedByList = '[]';
+                }
+
+                //print_r($assocLikedByList);
+                //print_r($assocDislikedByList);
+
+                //return;
+
+                $model->updateCommentLikesList($assocLikedByList, $assocDislikedByList, $id);
+
+                $output = $model->getComment($id);
 
                 $outputData = $this->restoreInitialData($output);
 
@@ -244,8 +309,6 @@ class CommentController extends BaseController
 
                 return;
             }
-
-
 
             $this->sendStatusCode422();
         }

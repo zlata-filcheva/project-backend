@@ -94,4 +94,40 @@ class BaseController
 
         return explode( '/', $uri );
     }
+
+    public function restoreInitialData($initialData) {
+        $outputData = [];
+
+        foreach ($initialData as $key => $object) {
+            if (!is_array($object)) {
+                $outputData[$key] = $object;
+                
+                continue;
+            }
+
+            $newObject = [];
+
+            foreach ($object as $objectKey => $objValue) {
+                $decodedData = json_decode($objValue, true);
+
+                if (!is_array($decodedData)) {
+                    $newObject[$objectKey] = stripslashes($objValue);
+
+                    continue;
+                }
+
+                foreach ($decodedData as $arrKey => $arrValue) {
+                    foreach ($arrValue as $item) {
+                        $decodedData[$arrKey] = $item;
+                    }
+                }
+
+                $newObject[$objectKey] = $decodedData;
+            }
+
+            $outputData[$key] = $newObject;
+        }
+
+        return $outputData;
+    }
 }

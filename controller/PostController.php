@@ -2,31 +2,6 @@
 
 class PostController extends BaseController
 {
-    public function restoreInitialData($initialData) {
-        $outputData = [];
-
-        foreach ($initialData as $key => $object) {
-            $newObject = [];
-            $newTagIds = [];
-
-            foreach ($object as $objectKey => $value) {
-                $newObject[$objectKey] = stripslashes($value);
-            }
-
-            $tagIds = json_decode($newObject['tagIds'], true);
-
-            foreach ($tagIds as $value) {
-                $newTagIds = [...$newTagIds, $value['tagId']];
-            }
-
-            $newObject['tagIds'] = $newTagIds;
-
-            $outputData[$key] = $newObject;
-        }
-
-        return $outputData;
-    }
-
     public function hasPost($id, $userId = ''): bool
     {
         $model = new PostModel();
