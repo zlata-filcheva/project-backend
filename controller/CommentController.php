@@ -47,21 +47,20 @@ class CommentController extends BaseController
 
     public function getCommentsList()
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $uri = explode( '/', $uri );
+        $arrQueryStringParams = $this->getQueryStringParams();
 
-        if (!array_key_exists(4, $uri)) {
-            $this->sendStatusCode422();
+        if (!isset($arrQueryStringParams['postId'])) {
+            $this->sendStatusCode422('No post id');
 
             return;
         }
 
+        ['postId' => $postId] = $arrQueryStringParams;
+
         try {
             $model = new CommentModel();
 
-            $id = $uri[4];
-
-            $response = $model->getCommentsList($id);
+            $response = $model->getCommentsList($postId);
 
             $normalizedData = $this->restoreInitialData($response);
 

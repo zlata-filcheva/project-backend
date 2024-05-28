@@ -80,10 +80,10 @@ class BaseController
         ];
     }
 
-    protected function sendStatusCode422()
+    protected function sendStatusCode422($message = '')
     {
         $this->sendOutput(
-            json_encode(self::RESPONSE_DATA_DECODED_422),
+            $message ?? json_encode(self::RESPONSE_DATA_DECODED_422),
             self::HEADERS_422
         );
     }

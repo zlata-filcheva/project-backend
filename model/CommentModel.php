@@ -39,7 +39,7 @@ SELECT
     parentId
 FROM comments 
 WHERE 
-    id = ?
+    postId = ?
     AND isDeleted = 0
 ORDER BY parentId ASC
 SQL;
@@ -95,8 +95,8 @@ class CommentModel extends Database
         return $this->selectData($query, $types, $params);
     }
 
-    public function getCommentsList($id) {
-        return $this->selectData(GET_COMMENTS_LIST_SQL, 'i', [$id]);
+    public function getCommentsList($postId) {
+        return $this->selectData(GET_COMMENTS_LIST_SQL, 'i', [$postId]);
     }
 
     public function createComment($userId, $content, $postId, $parentId) {
