@@ -259,6 +259,54 @@ paths:
                     type: array
                     items:
                       type: number
+  /posts/count:
+    get:
+      description: returns a count of all posts
+      responses:
+        '200':
+          description: Successfully returned a count of all posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+  /posts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+    get:
+      description: returns a post by id
+      responses:
+        '200':
+          description: Successfully returned a post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  content:
+                    type: string
+                  creationDate:
+                    type: string
+                  updateDate:
+                    type: string
+                  title:
+                    type: string
+                  categoryId:
+                    type: number
+                  userId:
+                    type: string
+                  tagIds:
+                    type: array
+                    items:
+                      type: number
     put:
       description: Allows to update a post
       requestBody:
@@ -272,7 +320,6 @@ paths:
                 - content
                 - categoryId
                 - tagIds
-                - id
                 - userId
               properties:
                 title:
@@ -285,8 +332,6 @@ paths:
                   type: array
                   items:
                     type: number
-                id:
-                  type: number
                 userId:
                   type: string
       responses:
@@ -315,56 +360,15 @@ paths:
                     type: array
                     items:
                       type: number
-  /posts/count:
-    get:
-      description: returns a count of all posts
+    delete:
+      description: Allows to delete a post
       responses:
         '200':
-          description: Successfully returned a count of all posts
+          description: Successfully deleted post
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  count:
-                    type: number
-  /posts/{id}:
-    get:
-      description: returns a post by id
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: number
-      responses:
-        '200':
-          description: Successfully returned a post
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: number
-                  content:
-                    type: string
-                  creationDate:
-                    type: string
-                  updateDate:
-                    type: string
-                  title:
-                    type: string
-                  categoryId:
-                    type: number
-                  userId:
-                    type: string
-                  tagIds:
-                    type: array
-                    items:
-                      type: number
-
-
+                type: string
   /comments:
     get:
       description: returns a list of comments related to the post
@@ -380,7 +384,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CommentResponse"
+                type: array
+                items:
+                  $ref: "#/components/schemas/CommentResponse"
     post:
       description: Allows to create a new comment
       requestBody:
@@ -459,6 +465,19 @@ paths:
             application/json:
               schema:
                 type: string
+  /comments/count:
+    get:
+      description: returns a count of all comments related to the post
+      responses:
+        '200':
+          description: Successfully returned a count of all comments related to the post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commentsTotal:
+                    type: number
 
 components:
   schemas:
@@ -467,19 +486,19 @@ components:
       properties:
         id:
           type: number
-        title:
+        userId:
           type: string
         content:
           type: string
-        creationDate:
-          type: string
-        updateDate:
-          type: string
-        categoryId:
-          type: number
-        userId:
-          type: string
-        tagIds:
+        likedBy:
           type: array
           items:
-            type: number
+            type: string
+        dislikedBy:
+          type: array
+          items:
+            type: string
+        postId:
+          type: number
+        parentId:
+          type: number

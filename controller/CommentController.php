@@ -19,6 +19,14 @@ class CommentController extends BaseController
         $uri = explode( '/', $uri );
 
         if (strtoupper($requestMethod) === 'GET') {
+            if (array_key_exists(4, $uri)) {
+                if ($uri[4] === 'count') {
+                    $this->getCommentsCount();
+
+                    return;
+                }
+            }
+            
             $this->getCommentsList();
 
             return;
@@ -45,6 +53,41 @@ class CommentController extends BaseController
         $this->sendStatusCode422();
     }
 
+    public function getCommentsCount() {
+        $arrQueryStringParams = $this->getQueryStringParams();
+
+        if (!isset($arrQueryStringParams['postId'])) {
+            $this->sendStatusCode422('No post id');
+
+            return;
+        }
+
+        ['postId' => $postId] = $arrQueryStringParams;
+        
+        try {
+            $model = new CommentsModel();
+
+            $response = $model->getCommentsCount($postId);
+
+            $output = [
+                'commentsTotal' => $response[0]['count']
+            ];
+
+            $responseData = json_encode($output);
+            $httpResponseHeader = self::HEADERS_200;
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
+        }
+    }
+    
     public function getCommentsList()
     {
         $arrQueryStringParams = $this->getQueryStringParams();

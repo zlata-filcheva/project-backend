@@ -57,9 +57,10 @@ class Database
             }
 
             if(count($params) < 1) {
+
                 $stmt->execute();
 
-                return;
+                return $stmt;
             }
 
             foreach ($params as &$value) {

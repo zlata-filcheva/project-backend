@@ -1,6 +1,15 @@
 <?php
 require_once PROJECT_ROOT_PATH . "/model/Database.php";
 
+const GET_COMMENTS_COUNT = <<<'SQL'
+SELECT 
+    COUNT(id) AS count
+FROM comments
+WHERE 
+    postId = ?
+    AND isDeleted = 0
+SQL;
+
 const IS_COMMENT_AUTHOR_SQL = <<<'SQL'
 SELECT 
     id
@@ -83,6 +92,11 @@ SQL;
 
 class CommentModel extends Database
 {
+    public function getCommentsCount($postId)
+    {
+        return $this->selectData(GET_COMMENTS_COUNT, 'i', [$postId]);
+    }
+    
     public function getComment($id, $userId = '') {
         $trimmedUserId = trim($userId);
         $userIdLength =  strlen($trimmedUserId);

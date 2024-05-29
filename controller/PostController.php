@@ -26,6 +26,8 @@ class PostController extends BaseController
                 }
 
                 $this->getPost($uri[4]);
+                
+                return;
             }
 
             $this->getPostsList();
@@ -55,9 +57,6 @@ class PostController extends BaseController
     }
 
     public function getPost($id) {
-        $responseData = "";
-        $httpResponseHeader = "";
-
         try {
             $model = new PostModel();
 
@@ -99,12 +98,16 @@ class PostController extends BaseController
         $arrQueryStringParams = $this->getQueryStringParams();
 
         try {
-            if (!isset($arrQueryStringParams['rowCount']) && !$arrQueryStringParams['rowCount']) {
-                throw new Error('No rowCount');
+            if (!isset($arrQueryStringParams['rowCount'])) {
+                $this->sendStatusCode422('No rowCount');
+
+                return;
             }
 
-            if (!isset($arrQueryStringParams['offset']) && !$arrQueryStringParams['offset']) {
-                throw new Error('No offset');
+            if (!isset($arrQueryStringParams['offset'])) {
+                $this->sendStatusCode422('No offset');
+
+                return;
             }
 
             $model = new PostModel();
@@ -150,13 +153,13 @@ class PostController extends BaseController
         try {
             $arrQueryStringParams = $this->getQueryStringParams();
 
-            if (!isset($arrQueryStringParams['rowCount']) && !$arrQueryStringParams['rowCount']) {
-                throw new Error('No rowCount');
+            if (!isset($arrQueryStringParams['rowCount'])) {
+                $this->sendStatusCode422('No rowCount');
+
+                return;
             }
 
-            [
-                'rowCount' => $rowCount,
-            ] = $arrQueryStringParams;
+            ['rowCount' => $rowCount] = $arrQueryStringParams;
 
             $model = new PostModel();
 
