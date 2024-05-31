@@ -65,7 +65,7 @@ class CommentController extends BaseController
         ['postId' => $postId] = $arrQueryStringParams;
         
         try {
-            $model = new CommentsModel();
+            $model = new CommentModel();
 
             $response = $model->getCommentsCount($postId);
 
@@ -107,7 +107,7 @@ class CommentController extends BaseController
 
             $normalizedData = $this->restoreInitialData($response);
 
-            $responseData = json_encode($normalizedData[0]);
+            $responseData = json_encode($normalizedData);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {

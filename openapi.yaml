@@ -468,6 +468,12 @@ paths:
   /comments/count:
     get:
       description: returns a count of all comments related to the post
+      parameters:
+        - name: postId
+          in: query
+          description: id of the post
+          schema:
+            type: integer
       responses:
         '200':
           description: Successfully returned a count of all comments related to the post
