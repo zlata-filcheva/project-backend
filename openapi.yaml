@@ -99,39 +99,9 @@ paths:
                       type: number
                     name:
                       type: string
-  /users/{id}:
-    get:
-      description: returns information about an user by id
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully returned user data
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  name:
-                    type: string
-                  surname:
-                    type: string
-                  nickname:
-                    type: string
-    post:
-      description: Allows to add missing information about user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+  /users:
+    put:
+      description: Allows to add or update information about user
       requestBody:
         required: true
         content:
@@ -141,16 +111,13 @@ paths:
               required:
                 - id
                 - name
-                - surname
-                - nickname
+                - picture
               properties:
                 id:
                   type: string
                 name:
                   type: string
-                surname:
-                  type: string
-                nickname:
+                picture:
                   type: string
       responses:
         '201':
@@ -200,12 +167,20 @@ paths:
                       type: string
                     categoryId:
                       type: number
-                    userId:
-                      type: string
                     tagIds:
                       type: array
                       items:
                         type: number
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        picture:
+                          type: string
+
     post:
       description: Allows to create a new post
       requestBody:
@@ -227,12 +202,19 @@ paths:
                   type: string
                 categoryId:
                   type: number
-                userId:
-                  type: string
                 tagIds:
                   type: array
                   items:
                     type: number
+                user:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    picture:
+                      type: string
       responses:
         '201':
           description: Successfully created a new post
@@ -301,12 +283,19 @@ paths:
                     type: string
                   categoryId:
                     type: number
-                  userId:
-                    type: string
                   tagIds:
                     type: array
                     items:
                       type: number
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      picture:
+                        type: string
     put:
       description: Allows to update a post
       requestBody:
@@ -332,8 +321,15 @@ paths:
                   type: array
                   items:
                     type: number
-                userId:
-                  type: string
+                user:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    picture:
+                      type: string
       responses:
         '200':
           description: Successfully updated post title or/and content

@@ -4,20 +4,23 @@ require_once PROJECT_ROOT_PATH . "/model/Database.php";
 const GET_USER_SQL = <<<'SQL'
 SELECT 
     id,
-    nickname,
     name,
-    surname
+    picture,
+    creationDate,
+    updateDate
 FROM users 
 WHERE id = ?
 SQL;
 
-const CREATE_USER_SQL = <<<'SQL'
-INSERT INTO users (
+const UPSERT_USER_SQL = <<<'SQL'
+INSERT INTO
+users (
     id,
-    nickname,
     name,
-    surname
-) VALUES (?, ?, ?, ?)
+    picture
+) VALUES
+(?, ?, ?)
+ON DUPLICATE KEY UPDATE name = ?, picture = ?
 SQL;
 
 class UserModel extends Database
@@ -29,10 +32,10 @@ class UserModel extends Database
         return $this->selectData(GET_USER_SQL, 's', $params);
     }
 
-    public function createUser($id, $nickname, $name, $surname)
+    public function updateUser($id, $name, $picture)
     {
-        $params = [$id, $nickname, $name, $surname];
+        $params = [$id, $name, $picture, $name, $picture];
 
-        return $this->modifyData(CREATE_USER_SQL, 'ssss', $params);
+        return $this->modifyData(UPSERT_USER_SQL, 'sssss', $params);
     }
 }

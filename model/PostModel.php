@@ -27,31 +27,39 @@ SQL;
 
 const GET_POST_SQL = <<<'SQL'
 SELECT 
-    id, 
-    content, 
-    creationDate,
-    updateDate,
-    title,
-    categoryId,
-    userId,
-    tagIds
+    posts.id, 
+    posts.content, 
+    posts.creationDate,
+    posts.updateDate,
+    posts.title,
+    posts.categoryId,
+    posts.tagIds,
+    posts.userId,
+    users.name as userName,
+    users.picture as userPicture
 FROM posts 
+INNER JOIN users
+ON posts.userId = users.id
 WHERE 
-    id = ? 
-    AND isDeleted = 0
+    posts.id = ?
+    AND posts.isDeleted = 0;
 SQL;
 
 const GET_POSTS_LIST_SQL = <<<'SQL'
 SELECT 
-    id, 
-    content, 
-    creationDate,
-    updateDate,
-    title,
-    categoryId,
-    userId,
-    tagIds
+    posts.id, 
+    posts.content, 
+    posts.creationDate,
+    posts.updateDate,
+    posts.title,
+    posts.categoryId,
+    posts.tagIds,
+    posts.userId,
+    users.name as userName,
+    users.picture as userPicture
 FROM posts 
+INNER JOIN users
+ON posts.userId = users.id
 WHERE isDeleted = 0
 ORDER BY creationDate DESC 
 LIMIT ? OFFSET ?

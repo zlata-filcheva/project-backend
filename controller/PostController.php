@@ -61,24 +61,28 @@ class PostController extends BaseController
             $model = new PostModel();
 
             $tagController = new TagController();
-
+            
             $response = $model->getPost($id);
 
             $normalizedData = $this->restoreInitialData($response);
+            $normalizedData = $normalizedData[0];
 
-            foreach ($normalizedData as &$value) {
-                $tagIds = $value['tagIds'];
+            $tagIds = $normalizedData['tagIds'];
+            $tagList = $tagController->getSelectedTagsList($tagIds);
 
-                $tagList = $tagController->getSelectedTagsList($tagIds);
+            $normalizedData['tagList'] = $tagList;
 
-                unset($value['tagIds']);
+            $normalizedData['user']['id'] = $normalizedData['userId'];
+            $normalizedData['user']['name'] = $normalizedData['userName'];
+            $normalizedData['user']['picture'] = $normalizedData['userPicture'];
 
-                $value['tagList'] = $tagList;
-            }
+            unset($normalizedData['tagIds']);
 
-            unset($value);
+            unset($normalizedData['userId']);
+            unset($normalizedData['userName']);
+            unset($normalizedData['userPicture']);
 
-            $responseData = json_encode($normalizedData[0]);
+            $responseData = json_encode($normalizedData);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -128,9 +132,17 @@ class PostController extends BaseController
 
                 $tagList = $tagController->getSelectedTagsList($tagIds);
 
+                $value['tagList'] = $tagList;
+
+                $value['user']['id'] = $value['userId'];
+                $value['user']['name'] = $value['userName'];
+                $value['user']['picture'] = $value['userPicture'];
+
                 unset($value['tagIds']);
 
-                $value['tagList'] = $tagList;
+                unset($value['userId']);
+                unset($value['userName']);
+                unset($value['userPicture']);
             }
 
             unset($value);
