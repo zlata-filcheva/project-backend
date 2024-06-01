@@ -23,14 +23,18 @@ SQL;
 
 const GET_COMMENT_SQL = <<<'SQL'
 SELECT 
-    id, 
-    userId, 
-    content,
-    likedBy,
-    dislikedBy,
-    postId,
-    parentId
+    comments.id, 
+    comments.content,
+    comments.likedBy,
+    comments.dislikedBy,
+    comments.postId,
+    comments.parentId,
+    comments.userId, 
+    users.name as userName,
+    users.picture as userPicture
 FROM comments 
+INNER JOIN users
+ON comments.userId = users.id
 WHERE 
     id = ?
     AND isDeleted = 0
@@ -39,14 +43,18 @@ SQL;
 
 const GET_COMMENTS_LIST_SQL = <<<'SQL'
 SELECT 
-    id, 
-    userId, 
-    content,
-    likedBy,
-    dislikedBy,
-    postId,
-    parentId
+    comments.id, 
+    comments.content,
+    comments.likedBy,
+    comments.dislikedBy,
+    comments.postId,
+    comments.parentId,
+    comments.userId, 
+    users.name as userName,
+    users.picture as userPicture
 FROM comments 
+INNER JOIN users
+ON comments.userId = users.id
 WHERE 
     postId = ?
     AND isDeleted = 0

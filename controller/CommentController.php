@@ -107,6 +107,18 @@ class CommentController extends BaseController
 
             $normalizedData = $this->restoreInitialData($response);
 
+            foreach ($normalizedData as &$value) {
+                $value['user']['id'] = $value['userId'];
+                $value['user']['name'] = $value['userName'];
+                $value['user']['picture'] = $value['userPicture'];
+
+                unset($value['userId']);
+                unset($value['userName']);
+                unset($value['userPicture']);
+            }
+            
+            unset($value);
+
             $responseData = json_encode($normalizedData);
             $httpResponseHeader = self::HEADERS_200;
         }
