@@ -490,14 +490,13 @@ components:
           type: number
         content:
           type: string
-        likedBy:
-          type: array
-          items:
-            type: string
-        dislikedBy:
-          type: array
-          items:
-            type: string
+        count:
+          type: object
+          properties:
+            likedBy:
+              type: number
+            dislikedBy:
+              type: number
         postId:
           type: number
         parentId:
@@ -511,3 +510,11 @@ components:
               type: string
             picture:
               type: string
+        creationDate:
+          type: string
+        updateDate:
+          type: string
+        isLiked:
+          type: boolean
+        isDisliked:
+          type: boolean

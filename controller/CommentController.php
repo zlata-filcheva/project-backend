@@ -112,9 +112,18 @@ class CommentController extends BaseController
                 $value['user']['name'] = $value['userName'];
                 $value['user']['picture'] = $value['userPicture'];
 
+                $value['count']['likedBy'] = count($value['likedBy']);
+                $value['count']['dislikedBy'] = count($value['dislikedBy']);
+
+                $value['isLiked'] = in_array($value['userId'], $value['likedBy']);
+                $value['isDisliked'] = in_array($value['userId'], $value['dislikedBy']);
+
                 unset($value['userId']);
                 unset($value['userName']);
                 unset($value['userPicture']);
+
+                unset($value['likedBy']);
+                unset($value['dislikedBy']);
             }
             
             unset($value);

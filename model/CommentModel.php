@@ -31,7 +31,9 @@ SELECT
     comments.parentId,
     comments.userId, 
     users.name as userName,
-    users.picture as userPicture
+    users.picture as userPicture,
+    comments.creationDate, 
+    comments.updateDate 
 FROM comments 
 INNER JOIN users
 ON comments.userId = users.id
@@ -51,7 +53,9 @@ SELECT
     comments.parentId,
     comments.userId, 
     users.name as userName,
-    users.picture as userPicture
+    users.picture as userPicture,
+    comments.creationDate, 
+    comments.updateDate 
 FROM comments 
 INNER JOIN users
 ON comments.userId = users.id
@@ -72,7 +76,9 @@ SQL;
 
 const UPDATE_COMMENT_CONTENT_SQL = <<<'SQL'
 UPDATE comments 
-SET content = ?
+SET 
+    content = ?,
+    updateDate = NOW()
 WHERE
     userId = ? 
     AND id = ?
@@ -92,6 +98,7 @@ SQL;
 const DELETE_COMMENT_SQL = <<<'SQL'
 UPDATE comments 
 SET 
+    updateDate = NOW(),
     isDeleted = 1
 WHERE
     id = ?
