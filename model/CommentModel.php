@@ -38,8 +38,8 @@ FROM comments
 INNER JOIN users
 ON comments.userId = users.id
 WHERE 
-    id = ?
-    AND isDeleted = 0
+    comments.id = ?
+    AND comments.isDeleted = 0
 ORDER BY parentId ASC
 SQL;
 
@@ -60,11 +60,11 @@ FROM comments
 INNER JOIN users
 ON comments.userId = users.id
 WHERE 
-    postId = ?
-    AND isDeleted = 0
+    comments.postId = ?
+    AND comments.isDeleted = 0
 ORDER BY 
-    parentId ASC,
-    id ASC
+    comments.parentId ASC,
+    comments.id ASC
 SQL;
 
 const CREATE_COMMENT_SQL = <<<'SQL'
@@ -122,7 +122,7 @@ class CommentModel extends Database
         $query = !($hasUserId > 0) ? GET_COMMENT_SQL : IS_COMMENT_AUTHOR_SQL;
         $types = !($hasUserId > 0) ? 'i' : 'is';
         $params = !($hasUserId > 0) ? [$id] : [$id, $userId];
-
+        
         return $this->selectData($query, $types, $params);
     }
 

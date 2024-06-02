@@ -297,7 +297,11 @@ class CommentController extends BaseController
 
                 $isCurrentlyCommentDisliked = in_array($likedByUserId, $dislikedByList);
 
-                $newLikedByList = [...$likedByList, $likedByUserId];
+                $newLikedByList = !$isCurrentlyCommentDisliked
+                    ? [...$likedByList, $likedByUserId]
+                    : array_filter($likedByList, function ($value) use ($likedByUserId) {
+                        return $value !== $likedByUserId;
+                    });
                 $newDislikedByList = $isCurrentlyCommentDisliked
                     ? array_filter($dislikedByList, function ($value) use ($likedByUserId) {
                         return $value !== $likedByUserId;
@@ -347,8 +351,12 @@ class CommentController extends BaseController
                 }
 
                 $isCurrentlyCommentLiked = in_array($dislikedByUserId, $likedByList);
-
-                $newDislikedByList = [...$dislikedByList, $dislikedByUserId];
+                
+                $newDislikedByList = !$isCurrentlyCommentLiked
+                    ? [...$dislikedByList, $dislikedByUserId]
+                    : array_filter($dislikedByList, function ($value) use ($likedByUserId) {
+                        return $value !== $likedByUserId;
+                    });
                 $newLikedByList = $isCurrentlyCommentLiked
                     ? array_filter($likedByList, function ($value) use ($dislikedByUserId) {
                         return $value !== $dislikedByUserId;
