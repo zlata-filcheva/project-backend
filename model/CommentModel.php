@@ -62,7 +62,9 @@ ON comments.userId = users.id
 WHERE 
     postId = ?
     AND isDeleted = 0
-ORDER BY parentId ASC
+ORDER BY 
+    parentId ASC,
+    id ASC
 SQL;
 
 const CREATE_COMMENT_SQL = <<<'SQL'
@@ -152,7 +154,7 @@ class CommentModel extends Database
     public function deleteComment($id, $userId) {
         $types = 'is';
         $params = [$id, $userId];
-
+        
         return $this->modifyData(DELETE_COMMENT_SQL, $types, $params);
     }
 }

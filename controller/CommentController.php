@@ -128,6 +128,21 @@ class CommentController extends BaseController
             
             unset($value);
 
+            /*
+            foreach ($normalizedData as $key => $value) {
+                $parentId = $value['parentId'];
+
+                if ($parentId === "0") {
+                    continue;
+                }
+
+                $parentKey = array_search($parentId, array_column($normalizedData, 'id'));
+                $normalizedData[$parentKey]['children'] = $value;
+
+                unset($normalizedData[$key]);
+            }
+            */
+            
             $responseData = json_encode($normalizedData);
             $httpResponseHeader = self::HEADERS_200;
         }
