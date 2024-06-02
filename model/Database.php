@@ -6,8 +6,16 @@ class Database
 
     public function __construct()
     {
+        $hasDevelopmentMode = $_SERVER['SERVER_NAME'] === '127.0.0.1';
+        $dbHostname = $hasDevelopmentMode
+            ? DB_HOST_DEVELOPMENT
+            : DB_HOST_PRODUCTION;
+        $username = DB_USERNAME;
+        $password = DB_PASSWORD;
+        $dbname = DB_DATABASE_NAME;
+
         try {
-            $this->connection = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME);
+            $this->connection = new mysqli($dbHostname, $username, $password, $dbname);
 
             if (mysqli_connect_errno()) {
                 throw new Exception("Could not connect to database.");
@@ -17,7 +25,7 @@ class Database
         }
     }
 
-    protected function selectData($query = "", $types = '', $params = [])
+    protected function selectData($query, $types = '', $params = [])
     {
         try {
             $stmt = $this->executeStatement($query, $types, $params);
@@ -30,7 +38,7 @@ class Database
         return false;
     }
 
-    protected function modifyData($query = "", $types, $params = [])
+    protected function modifyData($query, $types, $params = [])
     {
         try {
             $output = [];
@@ -47,7 +55,7 @@ class Database
         }
     }
 
-    private function executeStatement($query = "" , $types = '', $params = [])
+    private function executeStatement($query, $types = '', $params = [])
     {
         try {
             $stmt = $this->connection->prepare($query);

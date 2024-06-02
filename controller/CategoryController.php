@@ -32,6 +32,9 @@ class CategoryController extends BaseController
 
     public function getCategoriesList()
     {
+        $responseData = '';
+        $httpResponseHeader = '';
+        
         try {
             $model = new CategoryModel();
 
@@ -53,6 +56,9 @@ class CategoryController extends BaseController
 
     public function createCategory()
     {
+        $responseData = '';
+        $httpResponseHeader = '';
+        
         try {
             $model = new CategoryModel();
 
@@ -70,14 +76,14 @@ class CategoryController extends BaseController
                 return;
             }
 
-            $uri = $this->getUri();
-
             $output = $model->createCategory($category, $description);
             $insertId = $output['insert_id'];
             $response = $model->getCategory($insertId);
+            
+            [$controllerUri] = $this->getUri();
 
             $responseData = json_encode($response[0]);
-            $httpResponseHeader = $this->getStatusHeader201($uri[3], $insertId);
+            $httpResponseHeader = $this->getStatusHeader201($controllerUri[3], $insertId);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';

@@ -25,7 +25,7 @@ class TagController extends BaseController
     public function get()
     {
         $requestMethod = $_SERVER["REQUEST_METHOD"];
-
+        
         if (strtoupper($requestMethod) === 'GET') {
             $this->getTagsList();
 
@@ -43,11 +43,18 @@ class TagController extends BaseController
 
     public function getTagsList()
     {
+        $responseData = '';
+        $httpResponseHeader = '';
+
+        echo 666;
+
         try {
+            echo 555;
+
             $model = new TagModel();
-
+            
             $response = $model->getTagsList();
-
+            
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
         }
@@ -65,6 +72,9 @@ class TagController extends BaseController
 
     public function createTags()
     {
+        $responseData = '';
+        $httpResponseHeader = '';
+        
         try {
             $model = new TagModel();
 

@@ -1,17 +1,21 @@
 <?php
 
-require __DIR__ . "/inc/bootstrap.php";
-
 const ALLOWED_URI = ["categories", "comments", "posts", "tags", "users"];
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode( '/', $uri );
 
-if (!isset($uri[3]) || !in_array($uri[3], ALLOWED_URI)) {
+$hasDevelopmentMode = $_SERVER['SERVER_NAME'] === '127.0.0.1';
+
+$controllerUri = $hasDevelopmentMode ? $uri[3] : $uri[1];
+
+if (!isset($controllerUri) || !in_array($controllerUri, ALLOWED_URI)) {
     header("HTTP/1.1 404 Not Found");
 
     exit();
 }
+
+require __DIR__ . "/inc/bootstrap.php";
 
 require PROJECT_ROOT_PATH . "/controller/CategoryController.php";
 require PROJECT_ROOT_PATH . "/controller/CommentController.php";
@@ -25,22 +29,22 @@ $postController = new PostController();
 $tagController = new TagController();
 $userController = new UserController();
 
-if ($uri[3] === "categories") {
+if ($controllerUri === "categories") {
     $categoryController->get();
 }
 
-if ($uri[3] === "comments") {
+if ($controllerUri === "comments") {
     $commentController->get();
 }
 
-if ($uri[3] === "posts") {
+if ($controllerUri === "posts") {
     $postController->get();
 }
 
-if ($uri[3] === "tags") {
+if ($controllerUri === "tags") {
     $tagController->get();
 }
 
-if ($uri[3] === "users") {
+if ($controllerUri === "users") {
     $userController->get();
 }

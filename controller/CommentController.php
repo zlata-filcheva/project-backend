@@ -19,12 +19,12 @@ class CommentController extends BaseController
         $uri = explode( '/', $uri );
 
         if (strtoupper($requestMethod) === 'GET') {
-            if (array_key_exists(4, $uri)) {
-                if ($uri[4] === 'count') {
-                    $this->getCommentsCount();
+            [$controllerUri, $hasInfoUri, $infoUri] = $this->getUri();
+            
+            if ($hasInfoUri && $infoUri) {
+                $this->getCommentsCount();
 
-                    return;
-                }
+                return;
             }
             
             $this->getCommentsList();
@@ -54,6 +54,9 @@ class CommentController extends BaseController
     }
 
     public function getCommentsCount() {
+        $responseData = '';
+        $httpResponseHeader = '';
+
         $arrQueryStringParams = $this->getQueryStringParams();
 
         if (!isset($arrQueryStringParams['postId'])) {
@@ -90,6 +93,9 @@ class CommentController extends BaseController
     
     public function getCommentsList()
     {
+        $responseData = '';
+        $httpResponseHeader = '';
+
         $arrQueryStringParams = $this->getQueryStringParams();
 
         if (!isset($arrQueryStringParams['postId'])) {
@@ -162,9 +168,6 @@ class CommentController extends BaseController
         $responseData = "";
         $httpResponseHeader = "";
 
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $uri = explode( '/', $uri );
-
         try {
             $model = new CommentModel();
 
@@ -205,9 +208,10 @@ class CommentController extends BaseController
             $insertId = $response['insert_id'];
 
             $output = $model->getComment($insertId);
+            [$controllerUri] = $this->getUri();
 
             $responseData = json_encode($output[0]);
-            $httpResponseHeader = $this->getStatusHeader201($uri[3], $insertId);
+            $httpResponseHeader = $this->getStatusHeader201($controllerUri, $insertId);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
@@ -226,10 +230,9 @@ class CommentController extends BaseController
         $responseData = "";
         $httpResponseHeader = "";
 
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $uri = explode( '/', $uri );
+        [$controllerUri, $hasInfoUri, $infoUri] = $this->getUri();
 
-        if (!array_key_exists(4, $uri)) {
+        if (!$hasInfoUri) {
             $this->sendStatusCode422();
 
             return;
@@ -238,7 +241,7 @@ class CommentController extends BaseController
         try {
             $model = new CommentModel();
 
-            $id = $uri[4];
+            $id = $infoUri;
 
             $inputData = file_get_contents('php://input');
             $decodedData = json_decode($inputData);
@@ -275,7 +278,7 @@ class CommentController extends BaseController
                 $output = $model->getComment($id);
 
                 $responseData = json_encode($output[0]);
-                $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
+                $httpResponseHeader = $this->getStatusHeader201($controllerUri, $id);
 
                 return;
             }
@@ -330,7 +333,7 @@ class CommentController extends BaseController
                 $outputData = $this->restoreInitialData($output);
 
                 $responseData = json_encode($outputData[0]);
-                $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
+                $httpResponseHeader = $this->getStatusHeader201($controllerUri, $id);
 
                 return;
             }
@@ -385,7 +388,7 @@ class CommentController extends BaseController
                 $outputData = $this->restoreInitialData($output);
 
                 $responseData = json_encode($outputData[0]);
-                $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
+                $httpResponseHeader = $this->getStatusHeader201($controllerUri, $id);
 
                 return;
             }
@@ -408,10 +411,9 @@ class CommentController extends BaseController
         $responseData = "";
         $httpResponseHeader = "";
 
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $uri = explode( '/', $uri );
+        [$controllerUri, $hasInfoUri, $infoUri] = $this->getUri();
 
-        if (!array_key_exists(4, $uri)) {
+        if (!$hasInfoUri) {
             $this->sendStatusCode422();
 
             return;
@@ -420,7 +422,7 @@ class CommentController extends BaseController
         try {
             $model = new CommentModel();
 
-            $id = $uri[4];
+            $id = $infoUri;
 
             $inputData = file_get_contents('php://input');
             $decodedData = json_decode($inputData);
@@ -444,7 +446,7 @@ class CommentController extends BaseController
             $model->deleteComment($id, $userId);
 
             $responseData = "Comment has been deleted";
-            $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
+            $httpResponseHeader = $this->getStatusHeader201($controllerUri, $id);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
