@@ -1,6 +1,15 @@
 <?php
 require_once PROJECT_ROOT_PATH . "/model/Database.php";
 
+const GET_COMMENTS_COUNT = <<<'SQL'
+SELECT 
+    COUNT(id) AS count
+FROM comments
+WHERE 
+    postId = ?
+    AND isDeleted = 0
+SQL;
+
 const IS_COMMENT_AUTHOR_SQL = <<<'SQL'
 SELECT 
     id
@@ -14,34 +23,48 @@ SQL;
 
 const GET_COMMENT_SQL = <<<'SQL'
 SELECT 
-    id, 
-    userId, 
-    content,
-    likedBy,
-    dislikedBy,
-    postId,
-    parentId
+    comments.id, 
+    comments.content,
+    comments.likedBy,
+    comments.dislikedBy,
+    comments.postId,
+    comments.parentId,
+    comments.userId, 
+    users.name as userName,
+    users.picture as userPicture,
+    comments.creationDate, 
+    comments.updateDate 
 FROM comments 
+INNER JOIN users
+ON comments.userId = users.id
 WHERE 
-    id = ?
-    AND isDeleted = 0
+    comments.id = ?
+    AND comments.isDeleted = 0
 ORDER BY parentId ASC
 SQL;
 
 const GET_COMMENTS_LIST_SQL = <<<'SQL'
 SELECT 
-    id, 
-    userId, 
-    content,
-    likedBy,
-    dislikedBy,
-    postId,
-    parentId
+    comments.id, 
+    comments.content,
+    comments.likedBy,
+    comments.dislikedBy,
+    comments.postId,
+    comments.parentId,
+    comments.userId, 
+    users.name as userName,
+    users.picture as userPicture,
+    comments.creationDate, 
+    comments.updateDate 
 FROM comments 
+INNER JOIN users
+ON comments.userId = users.id
 WHERE 
-    postId = ?
-    AND isDeleted = 0
-ORDER BY parentId ASC
+    comments.postId = ?
+    AND comments.isDeleted = 0
+ORDER BY 
+    comments.parentId ASC,
+    comments.id ASC
 SQL;
 
 const CREATE_COMMENT_SQL = <<<'SQL'
@@ -55,7 +78,9 @@ SQL;
 
 const UPDATE_COMMENT_CONTENT_SQL = <<<'SQL'
 UPDATE comments 
-SET content = ?
+SET 
+    content = ?,
+    updateDate = NOW()
 WHERE
     userId = ? 
     AND id = ?
@@ -75,6 +100,7 @@ SQL;
 const DELETE_COMMENT_SQL = <<<'SQL'
 UPDATE comments 
 SET 
+    updateDate = NOW(),
     isDeleted = 1
 WHERE
     id = ?
@@ -83,6 +109,11 @@ SQL;
 
 class CommentModel extends Database
 {
+    public function getCommentsCount($postId)
+    {
+        return $this->selectData(GET_COMMENTS_COUNT, 'i', [$postId]);
+    }
+    
     public function getComment($id, $userId = '') {
         $trimmedUserId = trim($userId);
         $userIdLength =  strlen($trimmedUserId);
@@ -91,7 +122,7 @@ class CommentModel extends Database
         $query = !($hasUserId > 0) ? GET_COMMENT_SQL : IS_COMMENT_AUTHOR_SQL;
         $types = !($hasUserId > 0) ? 'i' : 'is';
         $params = !($hasUserId > 0) ? [$id] : [$id, $userId];
-
+        
         return $this->selectData($query, $types, $params);
     }
 
@@ -123,7 +154,7 @@ class CommentModel extends Database
     public function deleteComment($id, $userId) {
         $types = 'is';
         $params = [$id, $userId];
-
+        
         return $this->modifyData(DELETE_COMMENT_SQL, $types, $params);
     }
 }

@@ -19,6 +19,14 @@ class CommentController extends BaseController
         $uri = explode( '/', $uri );
 
         if (strtoupper($requestMethod) === 'GET') {
+            if (array_key_exists(4, $uri)) {
+                if ($uri[4] === 'count') {
+                    $this->getCommentsCount();
+
+                    return;
+                }
+            }
+            
             $this->getCommentsList();
 
             return;
@@ -45,6 +53,41 @@ class CommentController extends BaseController
         $this->sendStatusCode422();
     }
 
+    public function getCommentsCount() {
+        $arrQueryStringParams = $this->getQueryStringParams();
+
+        if (!isset($arrQueryStringParams['postId'])) {
+            $this->sendStatusCode422('No post id');
+
+            return;
+        }
+
+        ['postId' => $postId] = $arrQueryStringParams;
+        
+        try {
+            $model = new CommentModel();
+
+            $response = $model->getCommentsCount($postId);
+
+            $output = [
+                'commentsTotal' => $response[0]['count']
+            ];
+
+            $responseData = json_encode($output);
+            $httpResponseHeader = self::HEADERS_200;
+        }
+        catch (Error $e) {
+            $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
+
+            $responseData = json_encode(['error' => $strErrorDesc]);
+            $httpResponseHeader = self::HEADERS_500;
+
+        }
+        finally {
+            $this->sendOutput($responseData, $httpResponseHeader);
+        }
+    }
+    
     public function getCommentsList()
     {
         $arrQueryStringParams = $this->getQueryStringParams();
@@ -64,7 +107,43 @@ class CommentController extends BaseController
 
             $normalizedData = $this->restoreInitialData($response);
 
-            $responseData = json_encode($normalizedData[0]);
+            foreach ($normalizedData as &$value) {
+                $value['user']['id'] = $value['userId'];
+                $value['user']['name'] = $value['userName'];
+                $value['user']['picture'] = $value['userPicture'];
+
+                $value['count']['likedBy'] = count($value['likedBy']);
+                $value['count']['dislikedBy'] = count($value['dislikedBy']);
+
+                $value['isLiked'] = in_array($value['userId'], $value['likedBy']);
+                $value['isDisliked'] = in_array($value['userId'], $value['dislikedBy']);
+
+                unset($value['userId']);
+                unset($value['userName']);
+                unset($value['userPicture']);
+
+                unset($value['likedBy']);
+                unset($value['dislikedBy']);
+            }
+            
+            unset($value);
+
+            /*
+            foreach ($normalizedData as $key => $value) {
+                $parentId = $value['parentId'];
+
+                if ($parentId === "0") {
+                    continue;
+                }
+
+                $parentKey = array_search($parentId, array_column($normalizedData, 'id'));
+                $normalizedData[$parentKey]['children'] = $value;
+
+                unset($normalizedData[$key]);
+            }
+            */
+            
+            $responseData = json_encode($normalizedData);
             $httpResponseHeader = self::HEADERS_200;
         }
         catch (Error $e) {
@@ -218,7 +297,11 @@ class CommentController extends BaseController
 
                 $isCurrentlyCommentDisliked = in_array($likedByUserId, $dislikedByList);
 
-                $newLikedByList = [...$likedByList, $likedByUserId];
+                $newLikedByList = !$isCurrentlyCommentDisliked
+                    ? [...$likedByList, $likedByUserId]
+                    : array_filter($likedByList, function ($value) use ($likedByUserId) {
+                        return $value !== $likedByUserId;
+                    });
                 $newDislikedByList = $isCurrentlyCommentDisliked
                     ? array_filter($dislikedByList, function ($value) use ($likedByUserId) {
                         return $value !== $likedByUserId;
@@ -268,8 +351,12 @@ class CommentController extends BaseController
                 }
 
                 $isCurrentlyCommentLiked = in_array($dislikedByUserId, $likedByList);
-
-                $newDislikedByList = [...$dislikedByList, $dislikedByUserId];
+                
+                $newDislikedByList = !$isCurrentlyCommentLiked
+                    ? [...$dislikedByList, $dislikedByUserId]
+                    : array_filter($dislikedByList, function ($value) use ($likedByUserId) {
+                        return $value !== $likedByUserId;
+                    });
                 $newLikedByList = $isCurrentlyCommentLiked
                     ? array_filter($likedByList, function ($value) use ($dislikedByUserId) {
                         return $value !== $dislikedByUserId;
