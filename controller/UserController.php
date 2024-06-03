@@ -28,7 +28,6 @@ class UserController extends BaseController
     {
         $responseData = "";
         $httpResponseHeader = "";
-        $uri = $this->getUri();
 
         try {
             $model = new UserModel();
@@ -52,9 +51,10 @@ class UserController extends BaseController
 
             $model->updateUser($id, $name, $picture);
             $response = $model->getUser($id);
+            [$controllerUri] = $this->getUri();
 
             $responseData = json_encode($response[0]);
-            $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
+            $httpResponseHeader = $this->getStatusHeader201($controllerUri, $id);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';

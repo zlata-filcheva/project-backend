@@ -88,13 +88,6 @@ class BaseController
         );
     }
 
-    protected function getUri()
-    {
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-        return explode( '/', $uri );
-    }
-
     public function restoreInitialData($initialData) {
         $outputData = [];
 
@@ -129,5 +122,24 @@ class BaseController
         }
 
         return $outputData;
+    }
+
+    protected function getUri() {
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $uri = explode( '/', $uri );
+
+        $hasDevelopmentMode = $_SERVER['SERVER_NAME'] === '127.0.0.1';
+
+        $controllerUri = $hasDevelopmentMode ? $uri[3] : $uri[1];
+        $hasInfoUri = array_key_exists($hasDevelopmentMode ? 4 : 2, $uri);
+        $infoUri = (function($hasInfoUri, $hasDevelopmentMode, $uri) {
+            if (!$hasInfoUri) {
+                return null;
+            }
+            
+            return $hasDevelopmentMode ? $uri[4] : $uri[2];
+        })($hasInfoUri, $hasDevelopmentMode, $uri);
+
+        return [$controllerUri, $hasInfoUri, $infoUri];
     }
 }

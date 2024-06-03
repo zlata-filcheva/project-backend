@@ -16,16 +16,17 @@ class PostController extends BaseController
         $requestMethod = $_SERVER["REQUEST_METHOD"];
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $uri = explode( '/', $uri );
+        [$controllerUri, $hasInfoUri, $infoUri] = $this->getUri();
 
         if (strtoupper($requestMethod) === 'GET') {
-            if (array_key_exists(4, $uri)) {
-                if ($uri[4] === 'count') {
+            if ($hasInfoUri) {
+                if ($infoUri === 'count') {
                     $this->getPostsCount();
 
                     return;
                 }
 
-                $this->getPost($uri[4]);
+                $this->getPost($infoUri);
                 
                 return;
             }
@@ -57,6 +58,9 @@ class PostController extends BaseController
     }
 
     public function getPost($id) {
+        $responseData = '';
+        $httpResponseHeader = '';
+        
         try {
             $model = new PostModel();
 
@@ -99,6 +103,9 @@ class PostController extends BaseController
 
     public function getPostsList()
     {
+        $responseData = '';
+        $httpResponseHeader = '';
+        
         $arrQueryStringParams = $this->getQueryStringParams();
 
         try {
@@ -162,6 +169,9 @@ class PostController extends BaseController
     }
 
     public function getPostsCount() {
+        $responseData = '';
+        $httpResponseHeader = '';
+        
         try {
             $arrQueryStringParams = $this->getQueryStringParams();
 
@@ -230,8 +240,6 @@ class PostController extends BaseController
                 return;
             }
 
-            $uri = $this->getUri();
-
             $hasUser = $userController->hasUser($userId);
             $hasCategory = $categoryController->hasCategory($categoryId);
             $hasTags = $tagController->hasTags($tagIds);
@@ -254,9 +262,10 @@ class PostController extends BaseController
             $response = $model->getPost($insertId);
 
             $normalizedData = $this->restoreInitialData($response);
+            [$controllerUri] = $this->getUri();
 
             $responseData = json_encode($normalizedData[0]);
-            $httpResponseHeader = $this->getStatusHeader201($uri[3], $insertId);
+            $httpResponseHeader = $this->getStatusHeader201($controllerUri, $insertId);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
@@ -275,10 +284,9 @@ class PostController extends BaseController
         $responseData = "";
         $httpResponseHeader = "";
 
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $uri = explode( '/', $uri );
-
-        if (!array_key_exists(4, $uri)) {
+        [$controllerUri, $hasInfoUri, $infoUri] = $this->getUri();
+        
+        if (!$hasInfoUri) {
             $this->sendStatusCode422();
 
             return;
@@ -290,7 +298,7 @@ class PostController extends BaseController
             $tagController = new TagController();
             $categoryController = new CategoryController();
 
-            $id = $uri[4];
+            $id = $infoUri;
 
             $inputData = file_get_contents('php://input');
             $decodedData = json_decode($inputData);
@@ -349,7 +357,7 @@ class PostController extends BaseController
             $normalizedData = $this->restoreInitialData($response);
 
             $responseData = json_encode($normalizedData[0]);
-            $httpResponseHeader = $this->getStatusHeader201($uri[3], $id);
+            $httpResponseHeader = $this->getStatusHeader201($controllerUri, $id);
         }
         catch (Error $e) {
             $strErrorDesc = $e->getMessage() . 'Something went wrong! Please contact support.';
