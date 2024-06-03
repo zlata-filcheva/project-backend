@@ -1,7 +1,7 @@
 <?php
 const PROJECT_ROOT_PATH = __DIR__ . "/../";
 
-require PROJECT_ROOT_PATH . "/inc/cors.php";
+//require PROJECT_ROOT_PATH . "/inc/cors.php";
 require PROJECT_ROOT_PATH . "/inc/config.php";
 
 require PROJECT_ROOT_PATH . "/controller/BaseController.php";
