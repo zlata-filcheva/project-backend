@@ -1,18 +1,6 @@
 <?php
 
-header("Content-Type: application/json");
-
-echo 6666;
-echo "\n";
-
-require __DIR__ . "/inc/bootstrap.php";
-
-echo 555;
-echo "\n";
-
 const ALLOWED_URI = ["categories", "comments", "posts", "tags", "users"];
-
-print_r(ALLOWED_URI);
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode( '/', $uri );
@@ -22,6 +10,8 @@ if (!isset($uri[3]) || !in_array($uri[3], ALLOWED_URI)) {
 
     exit();
 }
+
+require __DIR__ . "/inc/bootstrap.php";
 
 require PROJECT_ROOT_PATH . "/controller/CategoryController.php";
 require PROJECT_ROOT_PATH . "/controller/CommentController.php";
