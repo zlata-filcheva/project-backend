@@ -1,7 +1,5 @@
 <?php
 
-require PROJECT_ROOT_PATH . "/model/TagModel.php";
-
 class TagController extends BaseController
 {
     public function getSelectedTagsList($ids)
