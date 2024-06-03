@@ -45,8 +45,12 @@ class TagController extends BaseController
     {
         $responseData = '';
         $httpResponseHeader = '';
-        
+
+        echo 666;
+
         try {
+            echo 555;
+
             $model = new TagModel();
             
             $response = $model->getTagsList();
