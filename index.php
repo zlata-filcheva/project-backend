@@ -5,6 +5,8 @@ const ALLOWED_URI = ["categories", "comments", "posts", "tags", "users"];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode( '/', $uri );
 
+print_r($uri);
+
 if (!isset($uri[3]) || !in_array($uri[3], ALLOWED_URI)) {
     header("HTTP/1.1 404 Not Found");
 
