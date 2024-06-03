@@ -14,7 +14,6 @@ if (!isset($controllerUri) || !in_array($controllerUri, ALLOWED_URI)) {
 
     exit();
 }
-echo 333;
 
 require __DIR__ . "/inc/bootstrap.php";
 echo 111;

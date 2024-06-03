@@ -14,7 +14,7 @@ if (strtolower($_SERVER['REQUEST_METHOD']) == 'OPTIONS') {
 $hasDevelopmentMode = $_SERVER['SERVER_NAME'] === '127.0.0.1';
 
 if (!$hasDevelopmentMode) {
-    die();
+    return;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

@@ -1,7 +1,6 @@
 <?php
 const PROJECT_ROOT_PATH = __DIR__ . "/../";
 
-echo 444;
 require PROJECT_ROOT_PATH . "/inc/cors.php";
 echo 555;
 require PROJECT_ROOT_PATH . "/inc/config.php";
