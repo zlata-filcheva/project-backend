@@ -16,13 +16,11 @@ if (!isset($controllerUri) || !in_array($controllerUri, ALLOWED_URI)) {
 }
 
 require __DIR__ . "/inc/bootstrap.php";
-echo 111;
 require PROJECT_ROOT_PATH . "/controller/CategoryController.php";
 require PROJECT_ROOT_PATH . "/controller/CommentController.php";
 require PROJECT_ROOT_PATH . "/controller/PostController.php";
 require PROJECT_ROOT_PATH . "/controller/TagController.php";
 require PROJECT_ROOT_PATH . "/controller/UserController.php";
-echo 222;
 $categoryController = new CategoryController();
 $commentController = new CommentController();
 $postController = new PostController();

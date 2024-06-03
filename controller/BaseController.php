@@ -29,7 +29,7 @@ class BaseController
 
     #[NoReturn] protected function sendOutput($data, $httpHeaders = [])
     {
-        header_remove('Set-Cookie');
+        //header_remove('Set-Cookie');
 
         if (is_array($httpHeaders) && count($httpHeaders)) {
             foreach ($httpHeaders as $httpHeader) {
