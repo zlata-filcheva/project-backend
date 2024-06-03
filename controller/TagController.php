@@ -26,11 +26,7 @@ class TagController extends BaseController
     {
         $requestMethod = $_SERVER["REQUEST_METHOD"];
         
-        echo $requestMethod;
-        
         if (strtoupper($requestMethod) === 'GET') {
-            echo 333;
-            
             $this->getTagsList();
 
             return;
@@ -49,6 +45,8 @@ class TagController extends BaseController
     {
         $responseData = '';
         $httpResponseHeader = '';
+        
+        echo 5555;
         
         try {
             $model = new TagModel();
