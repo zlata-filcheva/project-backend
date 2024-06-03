@@ -49,8 +49,12 @@ class TagController extends BaseController
         try {
             $model = new TagModel();
 
+            echo 111;
+            
             $response = $model->getTagsList();
 
+            echo 222;
+            
             $responseData = json_encode($response);
             $httpResponseHeader = self::HEADERS_200;
         }
