@@ -9,11 +9,7 @@ $hasDevelopmentMode = $_SERVER['SERVER_NAME'] === '127.0.0.1';
 
 $controllerUri = $hasDevelopmentMode ? $uri[3] : $uri[1];
 
-print_r($uri);
-print_r($hasDevelopmentMode ? 88: 99);
-print_r($controllerUri);
-print_r(in_array($controllerUri, ALLOWED_URI) ? 55 : 66);
-print_r($hasDevelopmentMode ? 3: 1);
+print_r((!isset($controllerUri) || !in_array($controllerUri, ALLOWED_URI))?55:66);
 
 if (!isset($controllerUri) || !in_array($controllerUri, ALLOWED_URI)) {
     header("HTTP/1.1 404 Not Found");
@@ -22,13 +18,13 @@ if (!isset($controllerUri) || !in_array($controllerUri, ALLOWED_URI)) {
 }
 
 require __DIR__ . "/inc/bootstrap.php";
-
+echo 111;
 require PROJECT_ROOT_PATH . "/controller/CategoryController.php";
 require PROJECT_ROOT_PATH . "/controller/CommentController.php";
 require PROJECT_ROOT_PATH . "/controller/PostController.php";
 require PROJECT_ROOT_PATH . "/controller/TagController.php";
 require PROJECT_ROOT_PATH . "/controller/UserController.php";
-
+echo 222;
 $categoryController = new CategoryController();
 $commentController = new CommentController();
 $postController = new PostController();
