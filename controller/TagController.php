@@ -26,6 +26,8 @@ class TagController extends BaseController
     {
         $requestMethod = $_SERVER["REQUEST_METHOD"];
 
+        echo $requestMethod;
+        
         if (strtoupper($requestMethod) === 'GET') {
             $this->getTagsList();
 
