@@ -14,7 +14,7 @@ services:
       - php
 
   php:
-    image: php:fpm
+    build: .  # Build from the Dockerfile in the current directory
     container_name: php
     volumes:
       - ./:/var/www/html
