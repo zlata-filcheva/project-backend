@@ -18,3 +18,14 @@ services:
     container_name: php
     volumes:
       - ./:/var/www/html
+
+  db:
+    image: mariadb
+    volumes:
+      -    mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: newReddit
+
+volumes:
+  mysql-data:
