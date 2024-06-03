@@ -9,13 +9,12 @@ $hasDevelopmentMode = $_SERVER['SERVER_NAME'] === '127.0.0.1';
 
 $controllerUri = $hasDevelopmentMode ? $uri[3] : $uri[1];
 
-print_r((!isset($controllerUri) || !in_array($controllerUri, ALLOWED_URI))?55:66);
-
 if (!isset($controllerUri) || !in_array($controllerUri, ALLOWED_URI)) {
     header("HTTP/1.1 404 Not Found");
 
     exit();
 }
+echo 333;
 
 require __DIR__ . "/inc/bootstrap.php";
 echo 111;
