@@ -1,7 +1,5 @@
 <?php
 
-phpinfo();
-/*
 require __DIR__ . "/inc/bootstrap.php";
 
 const ALLOWED_URI = ["categories", "comments", "posts", "tags", "users"];
@@ -46,4 +44,3 @@ if ($uri[3] === "tags") {
 if ($uri[3] === "users") {
     $userController->get();
 }
-*/
