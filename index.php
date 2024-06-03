@@ -9,6 +9,11 @@ $hasDevelopmentMode = $_SERVER['SERVER_NAME'] === '127.0.0.1';
 
 $controllerUri = $hasDevelopmentMode ? $uri[3] : $uri[1];
 
+
+print_r($hasDevelopmentMode);
+print_r($controllerUri);
+print_r(in_array($controllerUri, ALLOWED_URI));
+
 if (!isset($controllerUri) || !in_array($controllerUri, ALLOWED_URI)) {
     header("HTTP/1.1 404 Not Found");
 
