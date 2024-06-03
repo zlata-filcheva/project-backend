@@ -1,8 +1,16 @@
 <?php
 
+echo 6666;
+echo "\n";
+
 require __DIR__ . "/inc/bootstrap.php";
 
+echo 555;
+echo "\n";
+
 const ALLOWED_URI = ["categories", "comments", "posts", "tags", "users"];
+
+print_r(ALLOWED_URI);
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode( '/', $uri );
