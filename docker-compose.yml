@@ -29,8 +29,6 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_ROOT_PASSWORD: ""
       MYSQL_DATABASE: newReddit
-      MYSQL_USER: root
-      MYSQL_PASSWORD: ""
     volumes:
       - mariadb_data:/var/lib/mysql
 
