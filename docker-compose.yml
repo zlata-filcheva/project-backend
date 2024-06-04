@@ -10,16 +10,22 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./:/var/www/html
+    depends_on:
+      - php
+      - mariadb
 
   php:
     build: .  # Build from the Dockerfile in the current directory
     container_name: php
     volumes:
       - ./:/var/www/html
+    depends_on:
+      - mariadb
 
-  db:
+  mariadb:
     image: mariadb:latest
     container_name: mariadb
+    restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_ROOT_PASSWORD: ""
@@ -27,7 +33,7 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: ""
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - ./mysql-data:/var/lib/mysql
 
 volumes:
-  mariadb_data:
+  mysql-data:
