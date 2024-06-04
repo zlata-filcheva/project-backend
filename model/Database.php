@@ -11,8 +11,15 @@ class Database
             ? DB_HOST_DEVELOPMENT
             : DB_HOST_PRODUCTION;
 
+        $servername = "mariadb";  // Use the service name defined in docker-compose.yml
+        $username = "root";
+        $password = "";
+        $dbname = "newReddit";
+
         try {
-            $this->connection = new mysqli($dbHostname, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME);
+            //$this->connection = new mysqli($dbHostname, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME);
+
+            $conn = new mysqli($servername, $username, $password, $dbname);
 
             if (mysqli_connect_errno()) {
                 throw new Exception("Could not connect to database.");
