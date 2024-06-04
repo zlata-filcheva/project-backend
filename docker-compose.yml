@@ -12,7 +12,6 @@ services:
       - ./:/var/www/html
     depends_on:
       - php
-      - mariadb
 
   php:
     build: .  # Build from the Dockerfile in the current directory
@@ -20,17 +19,22 @@ services:
     volumes:
       - ./:/var/www/html
     depends_on:
-      - mariadb
+      - db
+    links:
+      - db
+    environment:
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: ""
 
-  mariadb:
+  db:
     image: mariadb:latest
     container_name: mariadb
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_ROOT_PASSWORD: ""
-      MYSQL_DATABASE: newReddit
-      MYSQL_USER: root
+      MYSQL_DATABASE: "newReddit"
+      MYSQL_USER: "root"
       MYSQL_PASSWORD: ""
     volumes:
       - ./mysql-data:/var/lib/mysql

@@ -1,5 +1,5 @@
 <?php
-$servername = "mariadb";  // Use the service name defined in docker-compose.yml
+$servername = "db";  // Use the service name defined in docker-compose.yml
 $username = "root";
 $password = "";
 $dbname = "newReddit";

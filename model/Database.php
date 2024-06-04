@@ -11,7 +11,7 @@ class Database
             ? DB_HOST_DEVELOPMENT
             : DB_HOST_PRODUCTION;
 
-        $servername = "mariadb";  // Use the service name defined in docker-compose.yml
+        $servername = "db";  // Use the service name defined in docker-compose.yml
         $username = "root";
         $password = "";
         $dbname = "newReddit";
