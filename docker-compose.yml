@@ -30,7 +30,7 @@ services:
       MYSQL_ROOT_PASSWORD: ""
       MYSQL_DATABASE: newReddit
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
 
 volumes:
-  mariadb_data:
+  mysql-data:
