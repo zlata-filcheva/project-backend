@@ -12,10 +12,6 @@ class Database
             : DB_HOST_PRODUCTION;
 
         try {
-            echo $dbHostname;
-
-            die();
-
             $this->connection = new mysqli($dbHostname, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME);
 
             if (mysqli_connect_errno()) {
