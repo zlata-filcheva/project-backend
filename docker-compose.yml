@@ -18,26 +18,3 @@ services:
     container_name: php
     volumes:
       - ./:/var/www/html
-    depends_on:
-      - db
-    links:
-      - db
-    environment:
-      MYSQL_USER: "root"
-      MYSQL_PASSWORD: ""
-
-  db:
-    image: mariadb:latest
-    container_name: mariadb
-    restart: always
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_ROOT_PASSWORD: ""
-      MYSQL_DATABASE: "newReddit"
-      MYSQL_USER: "root"
-      MYSQL_PASSWORD: ""
-    volumes:
-      - ./mysql-data:/var/lib/mysql
-
-volumes:
-  mysql-data:
