@@ -2,6 +2,8 @@
 
 echo 5555;
 
+return;
+
 header('Content-Type: application/json');
 
 //require __DIR__ . "/inc/bootstrap.php";
