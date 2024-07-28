@@ -17,7 +17,7 @@ class BaseController
 
     #[NoReturn] public function __call($name, $arguments)
     {
-        $this->sendOutput('', array('HTTP/1.1 404 Not Found'));
+        //$this->sendOutput('', array('HTTP/1.1 404 Not Found'));
     }
 
     protected function getQueryStringParams()
