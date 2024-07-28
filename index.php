@@ -2,6 +2,8 @@
 
 echo 5555;
 
+header('Content-Type: application/json');
+
 //require __DIR__ . "/inc/bootstrap.php";
 
 const ALLOWED_URI = ["categories", "comments", "posts", "tags", "users"];
