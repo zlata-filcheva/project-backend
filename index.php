@@ -1,8 +1,6 @@
 <?php
 
-echo 5555;
-
-return;
+echo 45678;
 
 header('Content-Type: application/json');
 
