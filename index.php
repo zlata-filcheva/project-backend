@@ -2,9 +2,6 @@
 
 echo 5555;
 
-
-return;
-
 require __DIR__ . "/inc/bootstrap.php";
 
 const ALLOWED_URI = ["categories", "comments", "posts", "tags", "users"];
