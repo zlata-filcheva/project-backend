@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `new-reddit`
+-- Database: `newreddit`
 --
 
 -- --------------------------------------------------------
@@ -32,15 +32,6 @@ CREATE TABLE `categories` (
   `name` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `categories`
---
-
-INSERT INTO `categories` (`id`, `name`, `description`) VALUES
-(47, 'mexican-american cuisine', 'All food related to Mexican cuisine and their descendants in the borderlands');
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `comments`
@@ -60,18 +51,6 @@ CREATE TABLE `comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `comments`
---
-
-INSERT INTO `comments` (`id`, `userId`, `content`, `likedBy`, `dislikedBy`, `postId`, `parentId`, `isDeleted`, `creationDate`, `updateDate`) VALUES
-(24, 'google-oauth2|114936289529998720731', 'Thank you, man!', '[{\"likedBy\":\"google-oauth2|107192927133540070430\"}]', '[]', 72, 0, 0, '2024-06-02 04:18:07', '2024-06-02 04:19:08'),
-(25, 'google-oauth2|114936289529998720731', 'Great! Cat, bless Texas!', '[{\"likedBy\":\"google-oauth2|107192927133540070430\"}]', '[]', 72, 0, 0, '2024-06-02 04:18:29', '2024-06-02 04:18:29'),
-(26, 'google-oauth2|114936289529998720731', 'Yes, prosper Murica!', '[{\"likedBy\":\"google-oauth2|107192927133540070430\"}]', '[]', 72, 0, 0, '2024-06-02 04:18:40', '2024-06-02 04:18:40'),
-(27, 'google-oauth2|114936289529998720731', 'Very!', '[]', '[]', 72, 0, 1, '2024-06-02 04:49:10', '2024-06-02 04:49:16');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `posts`
 --
 
@@ -88,15 +67,6 @@ CREATE TABLE `posts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `posts`
---
-
-INSERT INTO `posts` (`id`, `content`, `creationDate`, `updateDate`, `title`, `categoryId`, `userId`, `tagIds`, `isDeleted`) VALUES
-(72, 'People call TexMex a cuisine of the nothern part of Mexica and border states of the US. It is also very tasty!', '2024-06-02 04:17:53', '2024-06-02 04:48:59', 'TexMex food', 47, 'google-oauth2|114936289529998720731', '[{\"tagId\":95},{\"tagId\":96},{\"tagId\":97},{\"tagId\":98}]', 0);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `tags`
 --
 
@@ -105,18 +75,6 @@ CREATE TABLE `tags` (
   `name` varchar(255) NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tags`
---
-
-INSERT INTO `tags` (`id`, `name`, `date`) VALUES
-(95, 'texan', '2024-06-02 04:11:46'),
-(96, 'mexican', '2024-06-02 04:11:46'),
-(97, 'food', '2024-06-02 04:11:46'),
-(98, 'american', '2024-06-02 04:11:46');
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `users`
@@ -129,17 +87,6 @@ CREATE TABLE `users` (
   `creationDate` datetime NOT NULL DEFAULT current_timestamp(),
   `updateDate` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `name`, `picture`, `creationDate`, `updateDate`) VALUES
-('google-oauth2|114936289529998720731', 'Igor Filchev', 'https://lh3.googleusercontent.com/a/ACg8ocJ6VTnjtZ80nqV71yIkh06TeBrRCqCtWaSJlcWQalWzHkZsJQ=s96-c', '2024-06-02 04:12:32', '2024-06-02 04:12:32');
-
---
--- Indexes for dumped tables
---
 
 --
 -- Indexes for table `categories`
@@ -182,25 +129,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
