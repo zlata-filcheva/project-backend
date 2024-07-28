@@ -2,7 +2,7 @@
 
 echo 45678;
 
-header('Content-Type: application/json');
+//header('Content-Type: application/json');
 
 //require __DIR__ . "/inc/bootstrap.php";
 
