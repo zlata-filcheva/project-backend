@@ -1,24 +1,52 @@
 <?php
 
+echo 5555;
+
+return;
+
 header('Content-Type: application/json');
 
-// Get database connection parameters from environment variables
-$dbHost = getenv('DB_HOST');
-$dbPort = getenv('DB_PORT');
-$dbName = getenv('DB_NAME');
-$dbUser = getenv('DB_USER');
-$dbPassword = getenv('DB_PASSWORD');
+//require __DIR__ . "/inc/bootstrap.php";
 
-try {
-    // Create a new PDO instance
-    $pdo = new PDO("mysql:host=$dbHost;port=$dbPort;dbname=$dbName", $dbUser, $dbPassword);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+const ALLOWED_URI = ["categories", "comments", "posts", "tags", "users"];
 
-    // Execute a simple query to check connection
-    $query = $pdo->query("SELECT 'Database connection is working!' AS message");
-    $result = $query->fetch(PDO::FETCH_ASSOC);
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = explode( '/', $uri );
 
-    echo json_encode(['message' => $result['message']]);
-} catch (PDOException $e) {
-    echo json_encode(['error' => $e->getMessage()]);
+if (!isset($uri[3]) || !in_array($uri[3], ALLOWED_URI)) {
+    header("HTTP/1.1 404 Not Found");
+
+    exit();
+}
+
+require PROJECT_ROOT_PATH . "/controller/CategoryController.php";
+require PROJECT_ROOT_PATH . "/controller/CommentController.php";
+require PROJECT_ROOT_PATH . "/controller/PostController.php";
+require PROJECT_ROOT_PATH . "/controller/TagController.php";
+require PROJECT_ROOT_PATH . "/controller/UserController.php";
+
+$categoryController = new CategoryController();
+$commentController = new CommentController();
+$postController = new PostController();
+$tagController = new TagController();
+$userController = new UserController();
+
+if ($uri[3] === "categories") {
+    $categoryController->get();
+}
+
+if ($uri[3] === "comments") {
+    $commentController->get();
+}
+
+if ($uri[3] === "posts") {
+    $postController->get();
+}
+
+if ($uri[3] === "tags") {
+    $tagController->get();
+}
+
+if ($uri[3] === "users") {
+    $userController->get();
 }
